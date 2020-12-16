@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "aframe": "^1.1.0",
     "core-js": "^3.6.5",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
@@ -16,6 +17,7 @@
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
+    "@types/aframe": "^1.0.2",
     "@types/jest": "^24.0.19",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
