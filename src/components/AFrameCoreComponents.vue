@@ -8,10 +8,10 @@
               body="type: static; shape: sphere; sphereRadius: 0.001"
               super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"
     ></a-entity>
+    <!-- Hands -->
+    <a-entity sphere-collider="objects: .aframe-interactable" super-hands hand-controls="hand: left"></a-entity>
+    <a-entity sphere-collider="objects: .aframe-interactable" super-hands hand-controls="hand: right"></a-entity>
   </a-entity>
-  <!-- Hands -->
-  <a-entity sphere-collider="objects: .aframe-interactable" super-hands hand-controls="hand: left"></a-entity>
-  <a-entity sphere-collider="objects: .aframe-interactable" super-hands hand-controls="hand: right"></a-entity>
 
   <!-- Menu stuff -->
   <div id="icon-rollout">
