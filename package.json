@@ -12,6 +12,7 @@
     "aframe": "^1.1.0",
     "aframe-extras": "^6.1.1",
     "core-js": "^3.6.5",
+    "material-design-icons": "^3.0.1",
     "super-hands": "^3.0.2",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
