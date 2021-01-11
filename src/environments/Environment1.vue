@@ -6,8 +6,7 @@
   <!-- Ground collider -->
   <a-box body="type: static; shape: box" width=100 height=1 depth=100 position="0 -0.8 0" visible="false"></a-box>
 
-  <a-light color="#ffc" position="20 20 0"></a-light>
-  <a-light color="#aa8" position="-20 10 -10"></a-light>
+  <a-light type="ambient" intensity="0.2" color="#fff" position="20 20 0"></a-light>
 
   <a-assets>
     <a-assets-item id="mtl" :src="require('../assets/Room/materials.mtl')"></a-assets-item>
