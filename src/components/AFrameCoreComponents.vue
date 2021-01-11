@@ -2,7 +2,7 @@
   <a-box hoverable grabbable draggable droppable color="blue" position="0 4 -8" rotation="0 45 45" scale="1 1 1"></a-box>
 
   <!-- Camera entity -->
-  <a-entity id="rig" movement-controls="constrainToNavMesh: false" position="0 0 0">
+  <a-entity id="rig" ref="playerRig" movement-controls="constrainToNavMesh: false" position="0 0 0">
     <a-entity camera capture-mouse raycaster
               position="0 1.8 0" look-controls="pointerLockEnabled: true"
               body="type: static; shape: sphere; sphereRadius: 0.001"
@@ -17,12 +17,13 @@
   <div id="icon-rollout">
     <material-button class="material-icons em-3">more_horiz</material-button>
     <div id="favorites-menu">
-      <material-button class="material-icons em-3">star</material-button>
+      <material-button class="material-icons em-3 orange">star</material-button>
       <material-button class="material-icons em-3">create</material-button>
       <material-button class="material-icons em-3">tv</material-button>
     </div>
-    <material-button class="material-icons em-3">help</material-button>
-    <material-button class="material-icons em-3">insert_emoticon</material-button>
+    <material-button class="material-icons em-3 orange">help</material-button>
+    <material-button class="material-icons em-3 orange" v-on:click="respawn">refresh</material-button>
+    <material-button class="material-icons em-3 orange">insert_emoticon</material-button>
   </div>
 
 </template>
@@ -38,6 +39,10 @@
 material-button {
   cursor: pointer;
   user-select: none;
+
+  &.orange {
+    color: rgb(255, 81, 0);
+  }
 }
 
 #icon-rollout {
@@ -74,6 +79,12 @@ import { Options, Vue } from "vue-class-component";
 @Options({
   props: {
     msg: String
+  },
+  methods: {
+    respawn: function(event: any) {
+      const playerRig: HTMLElement = this.$refs.playerRig;
+      playerRig.setAttribute("position", "0 0 0");
+    }
   }
 })
 export default class AFrameCoreComponents extends Vue {
