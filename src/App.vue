@@ -1,6 +1,5 @@
 <template>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <a-scene>
     <AFrameCoreComponents />
     <router-view />
@@ -53,5 +52,4 @@ a-scene {
   height: 100%;
   position: absolute !important;
 }
-
 </style>
