@@ -21,9 +21,9 @@
       <material-button class="material-icons em-3">create</material-button>
       <material-button class="material-icons em-3">tv</material-button>
     </div>
-    <material-button class="material-icons em-3 orange" v-on:click="helpButton">help</material-button>
-    <material-button class="material-icons em-3 orange" v-on:click="respawnButton">refresh</material-button>
-    <material-button class="material-icons em-3 orange" v-on:click="emoteButton">insert_emoticon</material-button>
+    <material-button class="material-icons em-3 orange" @click="helpButton">help</material-button>
+    <material-button class="material-icons em-3 orange" @click="respawnButton">refresh</material-button>
+    <material-button class="material-icons em-3 orange" @click="emoteButton">insert_emoticon</material-button>
   </div>
 
 </template>
