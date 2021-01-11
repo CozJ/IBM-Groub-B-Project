@@ -5,8 +5,8 @@ import store from "./store";
 
 import AFrame from "aframe";
 import "aframe-physics-system/dist/aframe-physics-system";
-import "aframe-environment-component/dist/aframe-environment-component"
 
+require("aframe-environment-component");
 require("aframe-extras");
 require("super-hands");
 
