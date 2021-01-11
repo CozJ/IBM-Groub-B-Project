@@ -4,9 +4,9 @@ import router from "./router";
 import store from "./store";
 
 import AFrame from "aframe";
-//import AFrameExtras from "aframe-extras";
-require('aframe-extras');
-require('super-hands');
+require("aframe-extras");
+import "aframe-physics-system/dist/aframe-physics-system";
+require("super-hands");
 
 
 console.log(AFrame.version);

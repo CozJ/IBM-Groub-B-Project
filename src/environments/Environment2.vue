@@ -6,11 +6,7 @@
 import { Options, Vue } from "vue-class-component";
 
 @Options({
-  props: {
-    msg: String
-  }
 })
 export default class Environment2 extends Vue {
-  msg!: string;
 }
 </script>
