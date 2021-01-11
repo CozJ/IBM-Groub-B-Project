@@ -4,8 +4,10 @@ import router from "./router";
 import store from "./store";
 
 import AFrame from "aframe";
-require("aframe-extras");
 import "aframe-physics-system/dist/aframe-physics-system";
+import "aframe-environment-component/dist/aframe-environment-component"
+
+require("aframe-extras");
 require("super-hands");
 
 

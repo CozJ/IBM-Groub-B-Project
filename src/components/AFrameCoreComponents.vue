@@ -10,7 +10,8 @@
     ></a-entity>
   </a-entity>
   <!-- Hands -->
-  <a-entity sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity>
+  <a-entity sphere-collider="objects: .aframe-interactable" super-hands hand-controls="hand: left"></a-entity>
+  <a-entity sphere-collider="objects: .aframe-interactable" super-hands hand-controls="hand: right"></a-entity>
 
   <!-- Menu stuff -->
   <div id="icon-rollout">
