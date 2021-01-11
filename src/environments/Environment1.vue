@@ -1,5 +1,5 @@
 <template>
-  <a-box body="shape: box" hoverable grabbable draggable droppable color="red" position="0 5 -3" rotation="0 45 45" scale="1 1 1"></a-box>
+  <a-box id="test-target-one" body="shape: box" hoverable grabbable draggable droppable color="red" position="0 5 -3" rotation="0 45 45" scale="1 1 1"></a-box>
   <a-entity body="type: static; shape: box" obj-model="obj: #obj; mtl: #mtl;" position="-3 2 0" scale="5 5 5"></a-entity>
   <a-entity cubemap="folder: /SkyBoxes/"></a-entity>
 
