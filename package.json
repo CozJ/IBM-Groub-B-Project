@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "aframe": "^1.1.0",
+    "aframe-cubemap-component": "^2.1.1",
     "aframe-environment-component": "^2.0.0",
     "aframe-extras": "^6.1.1",
     "aframe-physics-system": "^4.0.1",

@@ -9,6 +9,7 @@ import "aframe-physics-system/dist/aframe-physics-system";
 require("aframe-environment-component");
 require("aframe-extras");
 require("super-hands");
+require("aframe-cubemap-component");
 
 
 console.log(AFrame.version);
