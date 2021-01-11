@@ -1,25 +1,22 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
   <a-scene>
     <AFrameCoreComponents />
-    <Environment1 />
     <router-view />
   </a-scene>
+  <div id="nav">
+    <router-link to="/environment-1">Environment 1</router-link> |
+    <router-link to="/environment-2">Environment 2</router-link>
+  </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 
 import AFrameCoreComponents from "@/components/AFrameCoreComponents.vue"; // @ is an alias to /src
-import Environment1 from "@/environments/Environment1.vue";
 
 @Options({
   components: {
-    AFrameCoreComponents,
-    Environment1
+    AFrameCoreComponents
   }
 })
 export default class App extends Vue {}
@@ -36,6 +33,8 @@ export default class App extends Vue {}
 
 #nav {
   padding: 30px;
+  position: absolute;
+  z-index: 10;
 
   a {
     font-weight: bold;
