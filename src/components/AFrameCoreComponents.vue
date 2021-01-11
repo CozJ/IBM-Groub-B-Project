@@ -21,9 +21,9 @@
       <material-button class="material-icons em-3">create</material-button>
       <material-button class="material-icons em-3">tv</material-button>
     </div>
-    <material-button class="material-icons em-3 orange">help</material-button>
-    <material-button class="material-icons em-3 orange" v-on:click="respawn">refresh</material-button>
-    <material-button class="material-icons em-3 orange">insert_emoticon</material-button>
+    <material-button class="material-icons em-3 orange" v-on:click="helpButton">help</material-button>
+    <material-button class="material-icons em-3 orange" v-on:click="respawnButton">refresh</material-button>
+    <material-button class="material-icons em-3 orange" v-on:click="emoteButton">insert_emoticon</material-button>
   </div>
 
 </template>
@@ -74,16 +74,27 @@ material-button {
 </style>
 
 <script lang="ts">
+import AFrame from "aframe";
+import THREE from "three";
+
 import { Options, Vue } from "vue-class-component";
+
 
 @Options({
   props: {
     msg: String
   },
   methods: {
-    respawn: function(event: any) {
-      const playerRig: HTMLElement = this.$refs.playerRig;
-      playerRig.setAttribute("position", "0 0 0");
+    helpButton: function(event: Event) {
+      alert("Help");
+    },
+    respawnButton: function(event: Event) {
+      const playerRig: AFrame.Entity = this.$refs.playerRig;
+
+      playerRig.object3D.position.set(0, 0, 0);
+    },
+    emoteButton: function(event: Event) {
+      alert("Emotes");
     }
   }
 })
