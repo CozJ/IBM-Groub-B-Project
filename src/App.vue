@@ -3,8 +3,27 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
   </div>
-  <router-view />
+  <a-scene>
+    <AFrameCoreComponents />
+    <Environment1 />
+    <router-view />
+  </a-scene>
 </template>
+
+<script lang="ts">
+import { Options, Vue } from "vue-class-component";
+
+import AFrameCoreComponents from "@/components/AFrameCoreComponents.vue"; // @ is an alias to /src
+import Environment1 from "@/environments/Environment1.vue";
+
+@Options({
+  components: {
+    AFrameCoreComponents,
+    Environment1
+  }
+})
+export default class App extends Vue {}
+</script>
 
 <style lang="scss">
 #app {
@@ -27,4 +46,10 @@
     }
   }
 }
+
+a-scene {
+  width: 100%;
+  height: 100%;
+}
+
 </style>

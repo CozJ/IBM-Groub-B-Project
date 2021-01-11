@@ -1,0 +1,16 @@
+<template>
+  <a-box color="red" position="0 2 -5" rotation="0 45 45" scale="2 2 2"></a-box>
+</template>
+
+<script lang="ts">
+import { Options, Vue } from "vue-class-component";
+
+@Options({
+  props: {
+    msg: String
+  }
+})
+export default class Environment1 extends Vue {
+  msg!: string;
+}
+</script>
