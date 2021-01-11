@@ -1,5 +1,5 @@
 <template>
-  <a-box dynamic-body color="red" position="0 2 -5" rotation="0 45 45" scale="2 2 2"></a-box>
+  <a-box hoverable grabbable draggable droppable dynamic-body color="red" position="0 4 -3" rotation="0 45 45" scale="1 1 1"></a-box>
   <a-entity static-body obj-model="obj: #obj; mtl: #mtl;" position="-3 2 0" scale="5 5 5"></a-entity>
 
   <a-assets>
