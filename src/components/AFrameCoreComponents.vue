@@ -13,14 +13,14 @@
 
   <!-- Menu stuff -->
   <div id="icon-rollout">
-    <span class="material-icons em-3">more_horiz</span>
+    <material-button class="material-icons em-3">more_horiz</material-button>
     <div id="favorites-menu">
-      <span class="material-icons em-3">star</span>
-      <span class="material-icons em-3">create</span>
-      <span class="material-icons em-3">tv</span>
+      <material-button class="material-icons em-3">star</material-button>
+      <material-button class="material-icons em-3">create</material-button>
+      <material-button class="material-icons em-3">tv</material-button>
     </div>
-    <span class="material-icons em-3">help</span>
-    <span class="material-icons em-3">insert_emoticon</span>
+    <material-button class="material-icons em-3">help</material-button>
+    <material-button class="material-icons em-3">insert_emoticon</material-button>
   </div>
 
 </template>
@@ -31,6 +31,11 @@
   .material-icons.em-#{$i} {
     font-size: $i * 1em;
   }
+}
+
+material-button {
+  cursor: pointer;
+  user-select: none;
 }
 
 #icon-rollout {
