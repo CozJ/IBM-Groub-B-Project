@@ -13,7 +13,7 @@
               body="type: static; shape: sphere; sphereRadius: 0.001"
               super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"
     >
-      <a-entity id="#cursor" visible="true" position="0 0 -1" scale="0.1 0.1 0.1" geometry="primitive: ring; radiusOuter: 0.20; radiusInner: 0.13;" material="color: #ADD8E6; shader: flat" cursor="maxDistance: 5;">
+      <a-entity id="desktop-cursor" visible="true" position="0 0 -1" scale="0.1 0.1 0.1" geometry="primitive: ring; radiusOuter: 0.20; radiusInner: 0.13;" material="color: #ADD8E6; shader: flat" cursor="maxDistance: 5;">
       </a-entity>
     </a-entity>
     <!-- Hands -->
@@ -62,7 +62,7 @@ import { Options, Vue } from "vue-class-component";
   },
   mounted: function () {
     // When component mounted
-    
+
     AFrame.registerComponent('core-bootstrapper', {
       init: () => {
         // And AFrame has loaded
@@ -76,16 +76,17 @@ import { Options, Vue } from "vue-class-component";
       }
     });
 
-      AFrame.registerComponent('hide-on-enter-vr-click', {
-        schema: {type: 'selector'},
+    AFrame.registerComponent('hide-on-enter-vr-click', {
+      schema: {type: 'selector'},
 
-        init: () => {
-          const sceneEl = this.el;
-          const entity = sceneEl.querySelector('.a-enter-vr-button');
-          sceneEl.addEventListener('enter-vr', function () {
-          entity.setAttribute('visible', false)
-          })
-        }
+      init: function () {
+        const sceneEl = this.el;
+        const target = this.data;
+
+        sceneEl.addEventListener('enter-vr', function () {
+          target.setAttribute('visible', 'false');
+        })
+      }
     });
 
   }

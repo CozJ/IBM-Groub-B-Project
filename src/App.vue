@@ -1,6 +1,6 @@
 <template>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <a-scene core-bootstrapper hide-on-enter-vr-click>
+  <a-scene core-bootstrapper hide-on-enter-vr-click="#desktop-cursor">
     <AFrameCoreComponents />
     <router-view />
   </a-scene>
