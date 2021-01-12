@@ -13,7 +13,7 @@
   <a-box id="test-target-one" body="shape: box" hoverable grabbable draggable droppable color="red" position="0 5 -3" rotation="0 45 45" scale="1 1 1"></a-box>
   <a-entity body="type: static; shape: box" obj-model="obj: #asset-obj; mtl: #asset-mtl;" position="-3 2 0" scale="5 5 5"></a-entity>
 
-  <a-entity gltf-model="#asset-navmesh" nav-mesh position="-3 2 0" scale="5 5 5"></a-entity>
+  <a-entity gltf-model="#asset-navmesh" nav-mesh visible="false" position="-3 2 0" scale="5 5 5"></a-entity>
 
   <!-- Ground collider -->
   <a-box body="type: static; shape: box" width=100 height=1 depth=100 position="0 -0.8 0" visible="false"></a-box>
