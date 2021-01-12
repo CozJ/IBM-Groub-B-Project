@@ -5,7 +5,7 @@ module.exports = {
   chainWebpack: config => {
     config.module
       .rule('aframe-assets')
-      .test(/\.(obj|mtl)$/)
+      .test(/\.(obj|mtl|gltf)$/)
       .use('file-loader')
       .loader('file-loader');
 

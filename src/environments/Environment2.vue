@@ -4,6 +4,7 @@
   
   <!--Objects-->
   <a-box color="green" position="0 2 -5" rotation="0 45 45" scale="2 2 2"></a-box>
+  <a-entity color="red" gltf-model="#gltf" position="0 0 0" scale="1 1 1"></a-entity>
 
   <!-- Ground collider -->
   <a-box body="type: static; shape: box" width=100 height=1 depth=100 position="0 -0.8 0" visible="false"></a-box>
@@ -13,6 +14,9 @@
   <a-light type="ambient" intensity="0.3" color="#fff" position="20 20 0"></a-light>
 
   <!--Assets-->
+  <a-assets>
+    <a-assets-item id="gltf" :src="require('../assets/Room/Entire.gltf')"></a-assets-item>
+  </a-assets>
 
 </template>
 
