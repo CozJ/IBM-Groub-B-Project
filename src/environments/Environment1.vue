@@ -7,19 +7,17 @@
   </a-assets>
 
   <!--SkyBox-->
-  <a-entity environment="preset: starry"></a-entity>
+  <a-entity environment="preset: starry" position="0 -5 0"></a-entity>
 
   <!--Objects-->
   <a-box id="test-target-one" body="shape: box" hoverable grabbable draggable droppable color="red" position="0 5 -3" rotation="0 45 45" scale="1 1 1"></a-box>
   <a-entity body="type: static; shape: box" obj-model="obj: #asset-obj; mtl: #asset-mtl;" position="4 -0.2 0" scale="1 1 1"></a-entity>
 
-  <a-entity gltf-model="#asset-navmesh" nav-mesh visible="true" position="4 -0.2 0" scale="1 1 1"></a-entity>
-
-  <!-- Ground collider -->
-  <a-box body="type: static; shape: box" width=100 height=1 depth=100 position="0 -0.8 0" visible="false"></a-box>
+  <a-entity gltf-model="#asset-navmesh" nav-mesh visible="false" position="4 -0.2 0" scale="1 1 1"></a-entity>
   
   <!--lights-->
-  <a-light type="ambient" intensity="0.6" color="#fff" position="20 20 0"></a-light>
+  <a-light type="ambient" intensity="0.3" color="#fff" position="20 20 0"></a-light>
+  <a-light type="point" intensity="1" color="#fff" position="-200 140 -70"></a-light>
 
 </template>
 
