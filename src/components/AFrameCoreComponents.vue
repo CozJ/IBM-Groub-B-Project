@@ -13,6 +13,8 @@
               body="type: static; shape: sphere; sphereRadius: 0.001"
               super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"
     >
+      <a-entity id="#cursor" visible="true" position="0 0 -1" scale="0.1 0.1 0.1" geometry="primitive: ring; radiusOuter: 0.20; radiusInner: 0.13;" material="color: #ADD8E6; shader: flat" cursor="maxDistance: 5;">
+      </a-entity>
     </a-entity>
     <!-- Hands -->
     <a-entity sphere-collider="objects: .aframe-interactable" super-hands hand-controls="hand: left"></a-entity>
@@ -35,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import AFrame from "aframe";
+import AFrame, { AScene } from "aframe";
 import THREE from "three";
 
 import { Options, Vue } from "vue-class-component";
@@ -73,6 +75,19 @@ import { Options, Vue } from "vue-class-component";
         ctx.fill();
       }
     });
+
+      AFrame.registerComponent('hide-on-enter-vr-click', {
+        schema: {type: 'selector'},
+
+        init: () => {
+          const sceneEl = this.el;
+          const entity = sceneEl.querySelector('.a-enter-vr-button');
+          sceneEl.addEventListener('enter-vr', function () {
+          entity.setAttribute('visible', false)
+          })
+        }
+    });
+
   }
 })
 export default class AFrameCoreComponents extends Vue {
