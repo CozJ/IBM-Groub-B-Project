@@ -1,5 +1,10 @@
 <template>
-  <a-box hoverable grabbable draggable droppable color="blue" position="0 4 -8" rotation="0 45 45" scale="1 1 1"></a-box>
+  <!--Assets-->
+  <a-assets>
+    <canvas ref="uiCanvas" id="ui-canvas"></canvas>
+  </a-assets>
+
+  <a-box hoverable grabbable draggable droppable material="src:#ui-canvas" position="0 4 -8" rotation="0 45 45" scale="1 1 1"></a-box>
 
   <!-- Camera entity -->
   <a-entity id="rig" ref="playerRig" movement-controls="constrainToNavMesh: true" position="0 0 0">
@@ -28,6 +33,52 @@
   </div>
 
 </template>
+
+<script lang="ts">
+import AFrame from "aframe";
+import THREE from "three";
+
+import { Options, Vue } from "vue-class-component";
+
+
+@Options({
+  props: {
+    msg: String
+  },
+  methods: {
+    helpButton: function(event: Event) {
+      alert("Help");
+    },
+    respawnButton: function(event: Event) {
+      const playerRig: AFrame.Entity = this.$refs.playerRig;
+
+      playerRig.object3D.position.set(0, 0, 0);
+    },
+    emoteButton: function(event: Event) {
+      alert("Emotes");
+    }
+  },
+  mounted: function () {
+    // When component mounted
+    
+    AFrame.registerComponent('core-bootstrapper', {
+      init: () => {
+        // And AFrame has loaded
+        const canvas: HTMLCanvasElement = this.$refs.uiCanvas;
+        const ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+        ctx.beginPath();
+        ctx.rect(20, 20, 150, 100);
+        ctx.fillStyle = "red";
+        ctx.fill();
+      }
+    });
+  }
+})
+export default class AFrameCoreComponents extends Vue {
+  msg!: string;
+}
+</script>
 
 <style scoped lang="scss">
 
@@ -73,33 +124,3 @@ material-button {
 }
 
 </style>
-
-<script lang="ts">
-import AFrame from "aframe";
-import THREE from "three";
-
-import { Options, Vue } from "vue-class-component";
-
-
-@Options({
-  props: {
-    msg: String
-  },
-  methods: {
-    helpButton: function(event: Event) {
-      alert("Help");
-    },
-    respawnButton: function(event: Event) {
-      const playerRig: AFrame.Entity = this.$refs.playerRig;
-
-      playerRig.object3D.position.set(0, 0, 0);
-    },
-    emoteButton: function(event: Event) {
-      alert("Emotes");
-    }
-  }
-})
-export default class AFrameCoreComponents extends Vue {
-  msg!: string;
-}
-</script>

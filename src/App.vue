@@ -1,6 +1,6 @@
 <template>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <a-scene>
+  <a-scene core-bootstrapper>
     <AFrameCoreComponents />
     <router-view />
   </a-scene>
