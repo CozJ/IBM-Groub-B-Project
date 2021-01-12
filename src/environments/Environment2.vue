@@ -5,10 +5,22 @@
       id="gltf"
       :src="require('../assets/Room/Room.gltf')"
     ></a-assets-item>
+    <img
+      id="thumbEnvironment3"
+      crossOrigin="anonymous"
+      src="@/assets/thumbEnvironment3.png"
+    />
   </a-assets>
 
   <!--SkyBox-->
   <a-entity cubemap="folder: /SpaceSkyBox/"></a-entity>
+
+  <a-link
+    position="20 1.5 5"
+    href="javascript:vueRouterReference.push('environment-3')"
+    image="#thumbEnvironment3"
+    title="Go to environment 3"
+  ></a-link>
 
   <!--Objects-->
   <a-box

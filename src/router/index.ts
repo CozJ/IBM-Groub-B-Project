@@ -32,4 +32,6 @@ const router = createRouter({
   routes
 });
 
+(window as any).vueRouterReference = router;
+
 export default router;
