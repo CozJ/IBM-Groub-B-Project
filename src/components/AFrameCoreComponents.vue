@@ -7,7 +7,8 @@
               position="0 1.8 0" look-controls="pointerLockEnabled: true"
               body="type: static; shape: sphere; sphereRadius: 0.001"
               super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"
-    ></a-entity>
+    >
+    </a-entity>
     <!-- Hands -->
     <a-entity sphere-collider="objects: .aframe-interactable" super-hands hand-controls="hand: left"></a-entity>
     <a-entity sphere-collider="objects: .aframe-interactable" super-hands hand-controls="hand: right"></a-entity>
