@@ -271,20 +271,16 @@ import THREE from "three";
 
     AFrame.registerComponent('showMenu', {
       init: function() {
-      const el = document.querySelector("#vrMenu");
-      el.addEventListener("triggerdown", function(evt){
+        const el = document.querySelector("#vrMenu");
+        el.addEventListener("triggerdown", function(evt){
           el.setAttribute('color','blue')
-      })
-
-<<<<<<< HEAD
+        });
       }
-    })
+    });
 
-=======
   },
   unmounted: function() {
     this.$emit("network-unsubscribe", "player/transform", this.updatePlayerTransform);
->>>>>>> 498c2fe7d72d7f399afe02856ba87c92cefe700c
   }
 })
 export default class AFrameCoreComponents extends Vue {
