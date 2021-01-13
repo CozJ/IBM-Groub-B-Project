@@ -9,6 +9,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@deepstream/client": "^5.1.10",
+    "@deepstream/server": "^5.1.8",
     "aframe": "^1.1.0",
     "aframe-cubemap-component": "^2.1.1",
     "aframe-environment-component": "^2.0.0",
