@@ -1,6 +1,6 @@
 <template>
   <link
-    href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined"
     rel="stylesheet"
   />
   <a-scene core-bootstrapper hide-on-enter-vr-click="#desktop-cursor">
