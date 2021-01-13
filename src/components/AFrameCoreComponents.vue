@@ -2,7 +2,7 @@
   <!--Assets-->
   <a-assets>
     <canvas ref="uiCanvas" id="ui-canvas"></canvas>
-
+    <img id="vrTripleDot" :src="require('../assets/baseline_more_horiz_black_18dp.png')">
     <a-assets-item
       :id="'emote-image-' + name"
       v-for="name in Object.keys(emotes)"
@@ -41,7 +41,6 @@
     >
       <a-entity 
         hide-on-enter-vr-click
-        id="desktopUI"
         visible="true"
         position="0 0 -1"
         scale="0.1 0.1 0.1"
@@ -50,17 +49,16 @@
         cursor="maxDistance: 5;"
       >
       </a-entity>
-      <a-entity
+      <a-plane
         show-on-enter-vr-click
-        id="vrUI"
         visible="false"
-        position="0 -0.15 -0.3.5"
-        scale="0.1 0.1 0.1"
-        geometry="primitive: ring; radiusOuter: 0.20; radiusInner: 0.13;"
-        material="color: #ffffff; shader: flat"
-        cursor="maxDistance: 5;"
+        position="0 -0.17 -0.4"
+        scale="0.05 0.05 0.05"
+        transparent="true"
+        rotation="-20 0 0"
+        src="#vrTripleDot"
       >
-      </a-entity>
+      </a-plane>
       <a-image
         id="local-emote"
         ref="localEmote"
