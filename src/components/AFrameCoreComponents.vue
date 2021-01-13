@@ -2,6 +2,13 @@
   <!--Assets-->
   <a-assets>
     <canvas ref="uiCanvas" id="ui-canvas"></canvas>
+
+    <a-assets-item
+      :id="'emote-image-' + name"
+      v-for="name in Object.keys(emotes)"
+      :key="'emote-image-' + name"
+      :src="require('../assets/emotes/emote_' + name + '.png')"
+    ></a-assets-item>
   </a-assets>
 
   <a-box
@@ -42,17 +49,17 @@
         cursor="maxDistance: 5;"
       >
       </a-entity>
-      <a-text
+      <a-image
         id="local-emote"
         ref="localEmote"
         visible="false"
-        position="0 0.1 -1"
-        align="center"
-        color="lightgreen"
-        baseline="center"
-        width="2"
-        value="empty"
-      ></a-text>
+        position="-0.08 0.2 -1"
+        width="724"
+        height="515"
+        scale="0.00075 0.00075 0.00075"
+        geometry="primitive: plane;"
+        material="src: #emote-image-unamused"
+      ></a-image>
     </a-entity>
     <!-- Hands -->
     <a-entity
@@ -80,7 +87,7 @@
       >insert_emoticon</material-button
     >
     <div id="emotes-menu" ref="emotesMenu">
-      <material-button v-for="[name, icon_id] in Object.entries(emotes)" :key="name" @click="sendEmote(name)" class="material-icons-outlined em-3">{{ icon_id }}</material-button>
+      <material-button v-for="[name, icon_id] in Object.entries(emotes)" :key="'emote-menu-button-' + name" @click="sendEmote(name)" class="material-icons-outlined em-3">{{ icon_id }}</material-button>
     </div>
   </div>
 </template>
@@ -95,11 +102,9 @@ import { Options, Vue } from "vue-class-component";
     return {
       emotesOpen: false,
       emotes: {
-        "happy": "sentiment_satisfied",
         "very_happy": "mood",
-        "unhappy": "sentiment_dissatisfied",
         "very_unhappy": "sentiment_very_dissatisfied",
-        "sick": "sick"
+        "unamused": "sick"
       },
       emoteTimeout: null
     }
@@ -137,7 +142,7 @@ import { Options, Vue } from "vue-class-component";
     sendEmote: function(name: string) {
       const emoteHUD: AFrame.Entity = this.$refs.localEmote;
 
-      emoteHUD.setAttribute('value', `emote ${name}`);
+      emoteHUD.setAttribute('material', `src: #emote-image-${name}`);
       emoteHUD.setAttribute('visible', 'true');
 
       if (this.$data.emoteTimeout != null)
@@ -251,7 +256,7 @@ material-button {
     transition: max-height ease-in-out 500ms;
 
     &.open {
-      max-height: (5 * 3.6em);
+      max-height: (3 * 3.6em);
     }
   }
 }
