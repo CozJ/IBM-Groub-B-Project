@@ -18,9 +18,9 @@
   <a-link
     position="20 1.5 5"
     href="javascript:vueRouterReference.push('environment-3')"
-    image="#thumbEnvironment3"
+    image="#thumbEnvironment3"                                            
     title="Go to environment 3"
-  ></a-link>
+  ></a-link> <!-- this only works in firefox, it crashes in chrome for some reason-->
 
   <!--Objects-->
   <a-box
