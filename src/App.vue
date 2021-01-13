@@ -3,7 +3,7 @@
     href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined"
     rel="stylesheet"
   />
-  <a-scene core-bootstrapper hide-on-enter-vr-click="#desktop-cursor">
+  <a-scene core-bootstrapper>
     <AFrameCoreComponents />
     <router-view />
   </a-scene>
