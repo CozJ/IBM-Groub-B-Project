@@ -4,6 +4,11 @@
     <canvas ref="uiCanvas" id="ui-canvas"></canvas>
     <img id="vrTripleDot" :src="require('../assets/baseline_more_horiz_black_18dp.png')">
     <a-assets-item
+      id="asset-remote-user"
+      :src="require('../assets/players/remote_user.gltf')"
+    ></a-assets-item>
+
+    <a-assets-item
       :id="'emote-image-' + name"
       v-for="name in Object.keys(emotes)"
       :key="'emote-image-' + name"
@@ -31,6 +36,7 @@
     position="0 0 0"
   >
     <a-entity
+      ref="playerCamera"
       camera
       capture-mouse
       raycaster
@@ -79,6 +85,10 @@
       sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity> <!--might be unnessecary-->
   </a-entity>
 
+  <!-- Remote user store -->
+  <a-entity id="remote-user-store" ref="remoteUserStore">
+  </a-entity>
+
   <!-- Menu stuff -->
   <div id="icon-rollout">
     <material-button class="material-icons em-3">more_horiz</material-button>
@@ -103,11 +113,16 @@
 </template>
 
 <script lang="ts">
-import AFrame from "aframe";
-
 import { Options, Vue } from "vue-class-component";
+import RemoteUser from "@/components/RemoteUser.vue"; // @ is an alias to /src
+
+import AFrame from "aframe";
+import THREE from "three";
 
 @Options({
+  components: {
+    RemoteUser
+  },
   data: function() {
     return {
       emotesOpen: false,
@@ -118,7 +133,8 @@ import { Options, Vue } from "vue-class-component";
         "angry": "not_listed_location",
         "unamused": "sick"
       },
-      emoteTimeout: null
+      emoteTimeout: null,
+      playerObjects: {}
     }
   },
   props: {
@@ -164,10 +180,45 @@ import { Options, Vue } from "vue-class-component";
       this.$data.emoteTimeout = setTimeout(() => {
         emoteHUD.setAttribute('visible', 'false');
       }, 2000);
+    },
+    updatePlayerTransform: function(data: any) {
+      const userID: string = data.userID;
+      const remoteUserStore: AFrame.Entity = this.$refs.remoteUserStore;
+
+      const ourUserID: string = this.$parent.$data.userID;
+      
+      if (userID == ourUserID) return;
+
+      let element: HTMLElement;
+
+      if (this.$data.playerObjects[userID] !== undefined) {
+        element = this.$data.playerObjects[userID];
+      } else {
+        element = document.createElement("a-entity");
+        element.setAttribute("gltf-model", "#asset-remote-user");
+        this.$data.playerObjects[userID] = element;
+        remoteUserStore.appendChild(element);
+      }
+
+      element.setAttribute("position", `${data.position.x} ${data.position.y} ${data.position.z}`);
+      element.setAttribute("rotation", `${data.rotation._x} ${data.rotation._y} ${data.rotation._z}`);
+
+      console.log(data);
     }
   },
   mounted: function() {
     // When component mounted
+    this.$emit("network-subscribe", "player/transform", this.updatePlayerTransform);
+
+    setInterval(() => {
+      const playerRig: AFrame.Entity = this.$refs.playerRig;
+      const playerCamera: AFrame.Entity = this.$refs.playerCamera;
+
+      this.$emit("network-event", "player/transform", {
+        position: playerRig.object3D.position,
+        rotation: playerCamera.object3D.rotation
+      });
+    }, 100);
 
     AFrame.registerComponent("core-bootstrapper", {
       init: () => {
@@ -216,6 +267,9 @@ import { Options, Vue } from "vue-class-component";
         }
       })
 
+  },
+  unmounted: function() {
+    this.$emit("network-unsubscribe", "player/transform", this.updatePlayerTransform);
   }
 })
 export default class AFrameCoreComponents extends Vue {

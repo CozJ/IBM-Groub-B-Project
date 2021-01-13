@@ -1,10 +1,6 @@
 <template>
   <!--Assets-->
   <a-assets>
-    <a-assets-item
-      id="gltf"
-      :src="require('../assets/Room/Room.gltf')"
-    ></a-assets-item>
     <img
       id="thumbEnvironment3"
       crossOrigin="anonymous"
@@ -29,7 +25,6 @@
     rotation="0 45 45"
     scale="2 2 2"
   ></a-box>
-  <a-entity gltf-model="#gltf"></a-entity>
 
   <!-- Ground collider -->
   <a-box
