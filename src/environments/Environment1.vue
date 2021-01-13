@@ -2,12 +2,8 @@
   <!--Assets-->
   <a-assets>
     <a-assets-item
-      id="asset-mtl"
-      :src="require('../assets/Room/model.mtl')"
-    ></a-assets-item>
-    <a-assets-item
-      id="asset-obj"
-      :src="require('../assets/Room/model.obj')"
+      id="room-obj"
+      :src="require('../assets/Room/Pavillion.gltf')"
     ></a-assets-item>
     <a-assets-item
       id="asset-navmesh"
@@ -44,7 +40,7 @@
 
   <a-entity
     body="type: static; shape: box"
-    obj-model="obj: #asset-obj; mtl: #asset-mtl;"
+    gltf-model="#room-obj"
     position="4 -0.2 0"
     scale="1 1 1"
   ></a-entity>
