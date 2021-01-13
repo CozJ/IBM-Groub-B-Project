@@ -50,6 +50,7 @@
       >
       </a-entity>
       <a-plane
+        id="vrMenu"
         show-on-enter-vr-click
         visible="false"
         position="0 -0.17 -0.4"
@@ -69,6 +70,7 @@
         scale="0.00075 0.00075 0.00075"
         geometry="primitive: plane;"
         material="src: #emote-image-unamused"
+        clickable
       ></a-image>
     </a-entity>
     <!-- Hands -->
@@ -205,16 +207,26 @@ import { Options, Vue } from "vue-class-component";
     });
 
     AFrame.registerComponent('phase-shift', {
-        init: function () {
-          const el = this.el
-          el.addEventListener('gripdown', function () {
-            el.setAttribute('collision-filter', {collisionForces: true})
-          })
-          el.addEventListener('gripup', function () {
-            el.setAttribute('collision-filter', {collisionForces: false})
-          })
-        }
+      init: function () {
+        const el = this.el
+        el.addEventListener('gripdown', function () {
+        el.setAttribute('collision-filter', {collisionForces: true})
+        })
+        el.addEventListener('gripup', function () {
+          el.setAttribute('collision-filter', {collisionForces: false})
+        })
+      }
+    });
+
+    AFrame.registerComponent('showMenu', {
+      init: function() {
+      const el = document.querySelector("#vrMenu");
+      el.addEventListener("triggerdown", function(evt){
+          el.setAttribute('color','blue')
       })
+
+      }
+    })
 
   }
 })
