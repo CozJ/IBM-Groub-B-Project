@@ -5,12 +5,13 @@
   </a-assets>
 
   <a-box
+    id=".aframe-interactable"
     hoverable
     grabbable
     draggable
     droppable
     material="src:#ui-canvas"
-    position="0 4 -8"
+    position="0 1 -8"
     rotation="0 45 45"
     scale="1 1 1"
   ></a-box>
@@ -44,15 +45,10 @@
     </a-entity>
     <!-- Hands -->
     <a-entity
-      sphere-collider="objects: .aframe-interactable"
-      super-hands
-      hand-controls="hand: left"
-    ></a-entity>
+      sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity> <!--might be unnessecary-->
+
     <a-entity
-      sphere-collider="objects: .aframe-interactable"
-      super-hands
-      hand-controls="hand: right"
-    ></a-entity>
+      sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity> <!--might be unnessecary-->
   </a-entity>
 
   <!-- Menu stuff -->
@@ -127,6 +123,19 @@ import { Options, Vue } from "vue-class-component";
         });
       }
     });
+
+    AFrame.registerComponent('phase-shift', {
+        init: function () {
+          const el = this.el
+          el.addEventListener('gripdown', function () {
+            el.setAttribute('collision-filter', {collisionForces: true})
+          })
+          el.addEventListener('gripup', function () {
+            el.setAttribute('collision-filter', {collisionForces: false})
+          })
+        }
+      })
+
   }
 })
 export default class AFrameCoreComponents extends Vue {

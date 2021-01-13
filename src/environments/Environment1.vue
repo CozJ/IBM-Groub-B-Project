@@ -31,6 +31,7 @@
   <a-box
     id="test-target-one"
     body="shape: box"
+    static-body
     hoverable
     grabbable
     draggable
@@ -40,6 +41,7 @@
     rotation="0 45 45"
     scale="1 1 1"
   ></a-box>
+
   <a-entity
     body="type: static; shape: box"
     obj-model="obj: #asset-obj; mtl: #asset-mtl;"

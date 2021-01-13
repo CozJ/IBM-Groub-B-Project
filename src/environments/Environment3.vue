@@ -92,6 +92,10 @@
 
   <a-entity
     body="type: static; shape: box"
+    hoverable
+    grabbable
+    draggable
+    droppable
     obj-model="obj: #asset-objects-tableLong-obj; mtl: #asset-objects-tableLong-mtl;"
     position="6 1.25 0"
     rotation="0 90 0"
