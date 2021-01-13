@@ -113,7 +113,9 @@ import { Options, Vue } from "vue-class-component";
       emotesOpen: false,
       emotes: {
         "very_happy": "mood",
+        "surprised": "not_listed_location",
         "very_unhappy": "sentiment_very_dissatisfied",
+        "angry": "not_listed_location",
         "unamused": "sick"
       },
       emoteTimeout: null
@@ -273,7 +275,7 @@ material-button {
     transition: max-height ease-in-out 500ms;
 
     &.open {
-      max-height: (3 * 3.6em);
+      max-height: (5 * 3.6em);
     }
   }
 }
