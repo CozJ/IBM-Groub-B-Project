@@ -41,6 +41,17 @@
         cursor="maxDistance: 5;"
       >
       </a-entity>
+      <a-text
+        id="local-emote"
+        ref="localEmote"
+        visible="false"
+        position="0 0.1 -1"
+        align="center"
+        color="lightgreen"
+        baseline="center"
+        width="2"
+        value="empty"
+      ></a-text>
     </a-entity>
     <!-- Hands -->
     <a-entity
@@ -72,6 +83,9 @@
     <material-button class="material-icons em-3 orange" @click="emoteButton"
       >insert_emoticon</material-button
     >
+    <div id="emotes-menu" ref="emotesMenu">
+      <material-button v-for="[name, icon_id] in Object.entries(emotes)" :key="name" @click="sendEmote(name)" class="material-icons-outlined em-3">{{ icon_id }}</material-button>
+    </div>
   </div>
 </template>
 
@@ -81,6 +95,19 @@ import AFrame from "aframe";
 import { Options, Vue } from "vue-class-component";
 
 @Options({
+  data: function() {
+    return {
+      emotesOpen: false,
+      emotes: {
+        "happy": "sentiment_satisfied",
+        "very_happy": "mood",
+        "unhappy": "sentiment_dissatisfied",
+        "very_unhappy": "sentiment_very_dissatisfied",
+        "sick": "sick"
+      },
+      emoteTimeout: null
+    }
+  },
   props: {
     msg: String
   },
@@ -93,8 +120,37 @@ import { Options, Vue } from "vue-class-component";
 
       playerRig.object3D.position.set(0, 0, 0);
     },
-    emoteButton: function() {
-      alert("Emotes");
+    emoteButton: function(event: MouseEvent) {
+      this.$data.emotesOpen = !this.$data.emotesOpen;
+
+      const button = (event.currentTarget as HTMLElement);
+      const menu = this.$refs.emotesMenu as HTMLElement;
+
+      if (this.$data.emotesOpen) {
+        button.classList.remove("orange");
+        button.classList.add("red");
+
+        menu.classList.add("open");
+      } else {
+        button.classList.remove("red");
+        button.classList.add("orange");
+
+        menu.classList.remove("open");
+      }
+    },
+    sendEmote: function(name: string) {
+      const emoteHUD: AFrame.Entity = this.$refs.localEmote;
+
+      emoteHUD.setAttribute('value', `emote ${name}`);
+      emoteHUD.setAttribute('visible', 'true');
+
+      if (this.$data.emoteTimeout != null)
+        clearTimeout(this.$data.emoteTimeout);
+
+      // Hide the emote after some time
+      this.$data.emoteTimeout = setTimeout(() => {
+        emoteHUD.setAttribute('visible', 'false');
+      }, 2000);
     }
   },
   mounted: function() {
@@ -136,8 +192,10 @@ export default class AFrameCoreComponents extends Vue {
 
 <style scoped lang="scss">
 @for $i from 1 through 10 {
-  .material-icons.em-#{$i} {
-    font-size: $i * 1em;
+  .material-icons, .material-icons-outlined {
+    &.em-#{$i} {
+      font-size: $i * 1em;
+    }
   }
 }
 
@@ -147,6 +205,9 @@ material-button {
 
   &.orange {
     color: rgb(255, 81, 0);
+  }
+  &.red {
+    color: rgb(255, 0, 0);
   }
 }
 
@@ -162,7 +223,7 @@ material-button {
     margin: 0.1em 0;
   }
 
-  #favorites-menu {
+  #favorites-menu, #emotes-menu {
     display: flex;
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.75);
@@ -172,6 +233,16 @@ material-button {
 
     span {
       margin: 0.1em 0;
+    }
+  }
+
+  #emotes-menu {
+    overflow-y: hidden;
+    max-height: 0;
+    transition: max-height ease-in-out 500ms;
+
+    &.open {
+      max-height: (5 * 3.6em);
     }
   }
 }
