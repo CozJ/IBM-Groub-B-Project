@@ -4,6 +4,7 @@
     rel="stylesheet"
   />
   <a-scene core-bootstrapper>
+    <a-entity progressive-controls></a-entity>
     <AFrameCoreComponents @network-event="sendNetworkMessage" @network-subscribe="subscribeNetworkMessage" @network-unsubscribe="unsubscribeNetworkMessage" />
     <router-view />
   </a-scene>

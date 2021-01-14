@@ -1,5 +1,7 @@
 <template>
   <!--Assets-->
+
+
   <a-assets>
     <canvas ref="uiCanvas" id="ui-canvas"></canvas>
     <img id="vrTripleDot" :src="require('../assets/baseline_more_horiz_black_18dp.png')">
@@ -17,7 +19,7 @@
   </a-assets>
 
   <a-box
-    id=".aframe-interactable"
+    id="aframe-interactable"
     hoverable
     grabbable
     draggable
@@ -27,6 +29,17 @@
     rotation="0 45 45"
     scale="1 1 1"
   ></a-box>
+
+  <a-box
+        id="vrMenu"
+        showMenu
+        clickable
+        color="blue"
+        position="1 1 1"
+        scale="1 1 1"
+        rotation="-20 0 0"
+  >
+  </a-box>
 
   <!-- Camera entity -->
   <a-entity
@@ -55,17 +68,6 @@
         cursor="maxDistance: 5;"
       >
       </a-entity>
-      <a-plane
-        id="vrMenu"
-        show-on-enter-vr-click
-        visible="false"
-        position="0 -0.17 -0.4"
-        scale="0.05 0.05 0.05"
-        transparent="true"
-        rotation="-20 0 0"
-        src="#vrTripleDot"
-      >
-      </a-plane>
       <a-image
         id="local-emote"
         ref="localEmote"
@@ -287,23 +289,16 @@ import * as THREE from "three";
       }
     });
 
-    AFrame.registerComponent('phase-shift', {
-      init: function () {
-        const el = this.el
-        el.addEventListener('gripdown', function () {
-        el.setAttribute('collision-filter', {collisionForces: true})
-        })
-        el.addEventListener('gripup', function () {
-          el.setAttribute('collision-filter', {collisionForces: false})
-        })
-      }
-    });
-
-    AFrame.registerComponent('showMenu', {
+    AFrame.registerComponent("showMenu", {
       init: function() {
-        const el = document.querySelector("#vrMenu");
-        el.addEventListener("triggerdown", function(evt){
-          el.setAttribute('color','blue')
+        const Element: AFrame.Entity = this.el;
+        const sceneEl = Element as HTMLElement;
+
+        Element.addEventListener("mouseenter", function(){
+          Element.setAttribute("color","red")
+        })
+        Element.addEventListener("mouseleave", function(){
+          Element.setAttribute("color", "red")
         });
       }
     });
