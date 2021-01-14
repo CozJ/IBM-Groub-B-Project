@@ -10,9 +10,9 @@
 
     <a-assets-item
       :id="'emote-image-' + name"
-      v-for="name in Object.keys(emotes)"
+      v-for="name in emotes"
       :key="'emote-image-' + name"
-      :src="require('../assets/emotes/emote_' + name + '.png')"
+      :src="require('../assets/emotes/' + name + '.png')"
     ></a-assets-item>
   </a-assets>
 
@@ -109,7 +109,7 @@
       >insert_emoticon</material-button
     >
     <div id="emotes-menu" ref="emotesMenu">
-      <material-button v-for="[name, icon_id] in Object.entries(emotes)" :key="'emote-menu-button-' + name" @click="sendEmote(name)" class="material-icons-outlined em-3">{{ icon_id }}</material-button>
+      <material-button-svg v-for="name in emotes" :key="'emote-menu-button-' + name" @click="sendEmote(name)" v-html="require('!html-loader!@/assets/emotes/icons/' + name + '.svg')" />
     </div>
   </div>
 </template>
@@ -127,13 +127,13 @@ import * as THREE from "three";
   data: function() {
     return {
       emotesOpen: false,
-      emotes: {
-        "very_happy": "mood",
-        "surprised": "not_listed_location",
-        "very_unhappy": "sentiment_very_dissatisfied",
-        "angry": "not_listed_location",
-        "unamused": "sick"
-      },
+      emotes: [
+        "happy",
+        "surprised",
+        "unhappy",
+        "angry",
+        "unamused",
+      ],
       emoteTimeout: null,
       playerObjects: {}
     }
@@ -258,10 +258,9 @@ import * as THREE from "three";
 
           if (match !== null) {
             const index: number = parseInt(match[1]) - 1;
-            const keys = Object.keys(this.$data.emotes);
 
-            if (index < keys.length)
-              this.sendEmote(keys[index]);
+            if (index < this.$data.emotes.length)
+              this.sendEmote(this.$data.emotes[index]);
           }
         });
       }
@@ -328,7 +327,12 @@ export default class AFrameCoreComponents extends Vue {
   }
 }
 
-material-button {
+material-button-svg {
+  width: 3em;
+  fill: white;
+}
+
+material-button, material-button-svg {
   cursor: pointer;
   user-select: none;
 

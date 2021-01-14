@@ -11,7 +11,7 @@ module.exports = {
 
     config.module
       .rule("aframe-physics-assets")
-      .test("/.js$/")
+      .test("/\.js$/")
       .include.add(function() {
         return ["src", require.resolve("aframe-physics-system")];
       })
