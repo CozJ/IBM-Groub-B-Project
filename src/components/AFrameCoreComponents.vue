@@ -41,13 +41,13 @@
   ></a-box>
 
   <a-box
-        id="vrMenu"
-        showMenu
-        clickable
-        color="blue"
-        position="1 1 1"
-        scale="1 1 1"
-        rotation="-20 0 0"
+    id="vrMenu"
+    show-menu
+    clickable
+    color="blue"
+    position="1 1 1"
+    scale="1 1 1"
+    rotation="-20 0 0"
   >
   </a-box>
 
@@ -319,16 +319,16 @@ import * as THREE from "three";
       }
     });
 
-    AFrame.registerComponent("showMenu", {
+    AFrame.registerComponent("show-menu", {
       init: function() {
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element as HTMLElement;
 
         Element.addEventListener("mouseenter", function(){
-          Element.setAttribute("color","red")
+          Element.setAttribute("color", "red")
         })
         Element.addEventListener("mouseleave", function(){
-          Element.setAttribute("color", "red")
+          Element.setAttribute("color", "blue")
         });
       }
     });
