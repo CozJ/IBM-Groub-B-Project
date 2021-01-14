@@ -174,31 +174,53 @@ import * as THREE from "three";
       emoteHUD.setAttribute('material', `src: #emote-image-${name}`);
       emoteHUD.setAttribute('visible', 'true');
 
-      if (this.$data.emoteTimeout != null)
+      this.$emit("network-event", "player/emote", {
+        emoteName: name
+      });
+
+      if (this.$data.emoteTimeout !== null)
         clearTimeout(this.$data.emoteTimeout);
 
       // Hide the emote after some time
       this.$data.emoteTimeout = setTimeout(() => {
         emoteHUD.setAttribute('visible', 'false');
+        this.$data.emoteTimeout = null;
       }, 2000);
     },
-    updatePlayerTransform: function(data: any) {
+    getRemoteUser: function(data: {userID: string}) {
       const userID: string = data.userID;
       const remoteUserStore: AFrame.Entity = this.$refs.remoteUserStore;
 
       const ourUserID: string = this.$parent.$data.userID;
       
-      if (userID == ourUserID) return;
+      if (userID === ourUserID) return undefined;
 
       const remoteUser: RemoteUser = this.$data.playerObjects[userID] ?? new RemoteUser(remoteUserStore);
       this.$data.playerObjects[userID] = remoteUser;
 
+      return remoteUser;
+    },
+    updatePlayerTransform: function(data: any) {
+      const remoteUser: RemoteUser = this.getRemoteUser(data);
+
+      if (typeof remoteUser === "undefined")
+        return;
+
       remoteUser.setNetworkTransform(data);
+    },
+    receiveEmote: function(data: any) {
+      const remoteUser: RemoteUser = this.getRemoteUser(data);
+
+      if (typeof remoteUser === "undefined")
+        return;
+
+      remoteUser.setEmote(data.emoteName);
     }
   },
   mounted: function() {
     // When component mounted
     this.$emit("network-subscribe", "player/transform", this.updatePlayerTransform);
+    this.$emit("network-subscribe", "player/emote", this.receiveEmote);
 
     setInterval(() => {
       const playerRig: AFrame.Entity = this.$refs.playerRig;
@@ -275,6 +297,7 @@ import * as THREE from "three";
   },
   unmounted: function() {
     this.$emit("network-unsubscribe", "player/transform", this.updatePlayerTransform);
+    this.$emit("network-unsubscribe", "player/emote", this.receiveEmote);
   }
 })
 export default class AFrameCoreComponents extends Vue {

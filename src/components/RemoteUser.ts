@@ -21,8 +21,22 @@ interface NetworkTransform {
 
 export default class RemoteUser {
   element: AFrame.Entity = document.createElement("a-entity");
+  emote: AFrame.Entity = document.createElement("a-image");
+  emoteTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 
   constructor(parentElement: HTMLElement) {
+    // Emote
+    this.emote.setAttribute("width", "724");
+    this.emote.setAttribute("height", "515");
+    this.emote.setAttribute("position", "0.016 0.4 0");
+    this.emote.setAttribute("rotation", "0 180 0");
+    this.emote.setAttribute("scale", "0.001 0.001 0.001");
+    this.emote.setAttribute("geometry", "primitive: plane;");
+    this.emote.setAttribute("material", "src: #emote-image-unamused");
+    this.emote.setAttribute("visible", "false");
+    this.element.appendChild(this.emote);
+    
+    // Main append
     this.element.setAttribute("gltf-model", "#asset-remote-user");
     parentElement.appendChild(this.element);
   }
@@ -36,5 +50,18 @@ export default class RemoteUser {
     } else {
       this.element.setAttribute("position", `${packet.position.x} ${packet.position.y} ${packet.position.z}`);
     }
+  }
+
+  setEmote(name: string) {
+    this.emote.setAttribute('material', `src: #emote-image-${name}`);
+    this.emote.setAttribute('visible', 'true');
+
+    if (typeof this.emoteTimeout !== "undefined")
+      clearTimeout(this.emoteTimeout);
+
+    this.emoteTimeout = setTimeout(() => {
+      this.emote.setAttribute("visible", "false");
+      this.emoteTimeout = undefined;
+    }, 2000);
   }
 }
