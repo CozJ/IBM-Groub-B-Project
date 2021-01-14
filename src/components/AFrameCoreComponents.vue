@@ -250,6 +250,20 @@ import * as THREE from "three";
         ctx.rect(20, 20, 150, 100);
         ctx.fillStyle = "red";
         ctx.fill();
+
+        // Key handler
+        document.addEventListener('keypress', (event: KeyboardEvent) => {
+          const regex = /Digit([1-9])/;
+          const match = event.code.match(regex);
+
+          if (match !== null) {
+            const index: number = parseInt(match[1]) - 1;
+            const keys = Object.keys(this.$data.emotes);
+
+            if (index < keys.length)
+              this.sendEmote(keys[index]);
+          }
+        });
       }
     });
 
