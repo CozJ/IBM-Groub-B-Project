@@ -120,7 +120,14 @@ export default class App extends Vue {}
   position: absolute;
   bottom: 1em;
   font-size: 2em;
+  font-weight: bolder;
   text-align: center;
+  color: white;
+  text-shadow:
+    -1.5px -1.5px 0 #000,  
+     1.5px -1.5px 0 #000,
+    -1.5px  1.5px 0 #000,
+     1.5px  1.5px 0 #000;
   width: 100%;
   z-index: 10;
 }
