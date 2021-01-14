@@ -3,18 +3,28 @@
 
 
   <a-assets>
+    <!-- UI -->
     <canvas ref="uiCanvas" id="ui-canvas"></canvas>
-    <img id="vrTripleDot" :src="require('../assets/baseline_more_horiz_black_18dp.png')">
-    <a-assets-item
-      id="asset-remote-user"
-      :src="require('../assets/players/remote_user.gltf')"
-    ></a-assets-item>
+    <img id="vrTripleDot" width="256" height="256" :src="require('../assets/ui/more_horiz.svg')">
 
     <a-assets-item
       :id="'emote-image-' + name"
-      v-for="name in Object.keys(emotes)"
+      v-for="name in emotes"
       :key="'emote-image-' + name"
-      :src="require('../assets/emotes/emote_' + name + '.png')"
+      :src="require('../assets/emotes/' + name + '.png')"
+    ></a-assets-item>
+    <img
+      :id="'emote-icon-' + name"
+      v-for="name in emotes"
+      width="256" height="256"
+      :key="'emote-icon-' + name"
+      :src="require('../assets/emotes/icons/' + name + '.svg')"
+    >
+
+    <!-- Remote users -->
+    <a-assets-item
+      id="asset-remote-user"
+      :src="require('../assets/players/remote_user.gltf')"
     ></a-assets-item>
   </a-assets>
 
@@ -61,12 +71,33 @@
       <a-entity 
         hide-on-enter-vr-click
         visible="true"
-        position="0 0 -1"
+        position="0 0 -0.1"
         scale="0.1 0.1 0.1"
-        geometry="primitive: ring; radiusOuter: 0.20; radiusInner: 0.13;"
+        geometry="primitive: ring; radiusOuter: 0.020; radiusInner: 0.013;"
         material="color: #ADD8E6; shader: flat"
         cursor="maxDistance: 5;"
       >
+      </a-entity>
+      <a-entity
+        id="vrMenu"
+        show-on-enter-vr-click
+        visible="false"
+        position="0 -0.17 -0.4"
+        scale="0.05 0.05 0.05"
+        rotation="-20 0 0"
+      >
+        <a-plane
+          transparent="true"
+          src="#vrTripleDot"
+          :position="`${0 - (emotes.length / 2)} 0 0`"
+        />
+        <a-plane
+          v-for="(name, index) in emotes"
+          :key="'emote-button-vr-' + name"
+          transparent="true"
+          :src="'#emote-icon-' + name"
+          :position="`${index + 1 - (emotes.length / 2)} 0 0`"
+        />
       </a-entity>
       <a-image
         id="local-emote"
@@ -78,7 +109,7 @@
         scale="0.00075 0.00075 0.00075"
         geometry="primitive: plane;"
         material="src: #emote-image-unamused"
-        clickable
+        transparent="true"
       ></a-image>
     </a-entity>
     <!-- Hands -->
@@ -111,7 +142,7 @@
       >insert_emoticon</material-button
     >
     <div id="emotes-menu" ref="emotesMenu">
-      <material-button v-for="[name, icon_id] in Object.entries(emotes)" :key="'emote-menu-button-' + name" @click="sendEmote(name)" class="material-icons-outlined em-3">{{ icon_id }}</material-button>
+      <material-button-svg v-for="name in emotes" :key="'emote-menu-button-' + name" @click="sendEmote(name)" v-html="require('!html-loader!@/assets/emotes/icons/' + name + '.svg')" />
     </div>
   </div>
 </template>
@@ -129,13 +160,13 @@ import * as THREE from "three";
   data: function() {
     return {
       emotesOpen: false,
-      emotes: {
-        "very_happy": "mood",
-        "surprised": "not_listed_location",
-        "very_unhappy": "sentiment_very_dissatisfied",
-        "angry": "not_listed_location",
-        "unamused": "sick"
-      },
+      emotes: [
+        "happy",
+        "surprised",
+        "unhappy",
+        "angry",
+        "unamused",
+      ],
       emoteTimeout: null,
       playerObjects: {}
     }
@@ -260,10 +291,9 @@ import * as THREE from "three";
 
           if (match !== null) {
             const index: number = parseInt(match[1]) - 1;
-            const keys = Object.keys(this.$data.emotes);
 
-            if (index < keys.length)
-              this.sendEmote(keys[index]);
+            if (index < this.$data.emotes.length)
+              this.sendEmote(this.$data.emotes[index]);
           }
         });
       }
@@ -323,7 +353,12 @@ export default class AFrameCoreComponents extends Vue {
   }
 }
 
-material-button {
+material-button-svg {
+  width: 3em;
+  fill: white;
+}
+
+material-button, material-button-svg {
   cursor: pointer;
   user-select: none;
 

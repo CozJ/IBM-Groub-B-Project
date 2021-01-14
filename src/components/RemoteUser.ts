@@ -33,6 +33,7 @@ export default class RemoteUser {
     this.emote.setAttribute("scale", "0.001 0.001 0.001");
     this.emote.setAttribute("geometry", "primitive: plane;");
     this.emote.setAttribute("material", "src: #emote-image-unamused");
+    this.emote.setAttribute("transparent", "true");
     this.emote.setAttribute("visible", "false");
     this.element.appendChild(this.emote);
     
