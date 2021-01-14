@@ -48,9 +48,9 @@
       <a-entity 
         hide-on-enter-vr-click
         visible="true"
-        position="0 0 -1"
+        position="0 0 -0.1"
         scale="0.1 0.1 0.1"
-        geometry="primitive: ring; radiusOuter: 0.20; radiusInner: 0.13;"
+        geometry="primitive: ring; radiusOuter: 0.020; radiusInner: 0.013;"
         material="color: #ADD8E6; shader: flat"
         cursor="maxDistance: 5;"
       >
