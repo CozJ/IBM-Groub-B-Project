@@ -2,51 +2,51 @@
   <a-assets>
     <a-assets-item
       id="asset-objects-chairBasic-mtl"
-      :src="require('../assets/Room/objects/chairBasic.mtl')"
+      :src="require('../assets/room/objects/chairBasic.mtl')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-chairBasic-obj"
-      :src="require('../assets/Room/objects/chairBasic.obj')"
+      :src="require('../assets/room/objects/chairBasic.obj')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-chairComfy-mtl"
-      :src="require('../assets/Room/objects/chairComfy.mtl')"
+      :src="require('../assets/room/objects/chairComfy.mtl')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-chairComfy-obj"
-      :src="require('../assets/Room/objects/chairComfy.obj')"
+      :src="require('../assets/room/objects/chairComfy.obj')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-tableLong-mtl"
-      :src="require('../assets/Room/objects/tableLong.mtl')"
+      :src="require('../assets/room/objects/tableLong.mtl')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-tableLong-obj"
-      :src="require('../assets/Room/objects/tableLong.obj')"
+      :src="require('../assets/room/objects/tableLong.obj')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-tableRegular-mtl"
-      :src="require('../assets/Room/objects/tableRegular.mtl')"
+      :src="require('../assets/room/objects/tableRegular.mtl')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-tableRegular-obj"
-      :src="require('../assets/Room/objects/tableRegular.obj')"
+      :src="require('../assets/room/objects/tableRegular.obj')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-Tree1-mtl"
-      :src="require('../assets/Room/objects/Tree1.mtl')"
+      :src="require('../assets/room/objects/Tree1.mtl')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-Tree1-obj"
-      :src="require('../assets/Room/objects/Tree1.obj')"
+      :src="require('../assets/room/objects/Tree1.obj')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-Tree2-mtl"
-      :src="require('../assets/Room/objects/Tree2.mtl')"
+      :src="require('../assets/room/objects/Tree2.mtl')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-Tree2-obj"
-      :src="require('../assets/Room/objects/Tree2.obj')"
+      :src="require('../assets/room/objects/Tree2.obj')"
     ></a-assets-item>
   </a-assets>
 

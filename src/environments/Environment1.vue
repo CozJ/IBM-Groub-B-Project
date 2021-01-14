@@ -3,20 +3,20 @@
   <a-assets>
     <a-assets-item
       id="room-obj"
-      :src="require('../assets/Room/Pavillion.gltf')"
+      :src="require('../assets/room/Pavillion.gltf')"
     ></a-assets-item>
     <a-assets-item
       id="asset-navmesh"
-      :src="require('../assets/Room/navmesh.gltf')"
+      :src="require('../assets/room/navmesh.gltf')"
     ></a-assets-item>
 
     <a-assets-item
       id="asset-objects-chairComfy-mtl"
-      :src="require('../assets/Room/objects/chairComfy.mtl')"
+      :src="require('../assets/room/objects/chairComfy.mtl')"
     ></a-assets-item>
     <a-assets-item
       id="asset-objects-chairComfy-obj"
-      :src="require('../assets/Room/objects/chairComfy.obj')"
+      :src="require('../assets/room/objects/chairComfy.obj')"
     ></a-assets-item>
   </a-assets>
 

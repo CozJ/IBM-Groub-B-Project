@@ -2,7 +2,7 @@
   <!--Assets-->
   <a-assets>
     <canvas ref="uiCanvas" id="ui-canvas"></canvas>
-    <img id="vrTripleDot" :src="require('../assets/baseline_more_horiz_black_18dp.png')">
+    <img id="vrTripleDot" :src="require('../assets/ui/more_horiz.svg')">
     <a-assets-item
       id="asset-remote-user"
       :src="require('../assets/players/remote_user.gltf')"
