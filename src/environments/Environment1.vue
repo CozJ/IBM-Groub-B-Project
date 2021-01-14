@@ -21,7 +21,7 @@
   </a-assets>
 
   <!--SkyBox-->
-  <a-entity environment="preset: starry" position="0 -5 0"></a-entity>
+  <!--<a-entity environment="preset: forest" position="0 -5 0"></a-entity>-->
 
   <!--Objects-->
   <a-box
@@ -41,24 +41,23 @@
   <a-entity
     body="type: static; shape: box"
     gltf-model="#room-obj"
-    position="4 -0.2 0"
+    position="0 0 5"
+    scale="1 1 1"
+  ></a-entity>
+  <a-entity
+    gltf-model="#asset-navmesh"
+    nav-mesh
+    visible="false"
+    position="0 0 5"
     scale="1 1 1"
   ></a-entity>
 
   <a-entity
     body="type: static; shape: box"
     obj-model="obj: #asset-objects-chairComfy-obj; mtl: #asset-objects-chairComfy-mtl;"
-    position="4 0.5 -8"
-    rotation="0 0 0"
+    position="-4 0.5 14"
+    rotation="0 135 0"
     scale="0.75 0.75 0.75"
-  ></a-entity>
-
-  <a-entity
-    gltf-model="#asset-navmesh"
-    nav-mesh
-    visible="false"
-    position="4 -0.2 0"
-    scale="1 1 1"
   ></a-entity>
 
   <!--lights-->
@@ -66,13 +65,13 @@
     type="ambient"
     intensity="0.3"
     color="#fff"
-    position="20 20 0"
+    position="0 0 0"
   ></a-light>
   <a-light
-    type="point"
-    intensity="1"
+    type="directional"
+    intensity="2"
     color="#fff"
-    position="-200 140 -70"
+    position="0 20 20"
   ></a-light>
 </template>
 

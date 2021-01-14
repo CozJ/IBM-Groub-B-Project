@@ -45,7 +45,7 @@
     show-menu
     clickable
     color="blue"
-    position="1 1 1"
+    position="-5 1 -4"
     scale="1 1 1"
     rotation="-20 0 0"
   >
