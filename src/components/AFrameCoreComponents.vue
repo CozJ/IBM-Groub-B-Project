@@ -119,7 +119,7 @@ import { Options, Vue } from "vue-class-component";
 import RemoteUser from "@/components/RemoteUser.vue"; // @ is an alias to /src
 
 import AFrame from "aframe";
-import THREE from "three";
+import * as THREE from "three";
 
 @Options({
   components: {
@@ -191,7 +191,7 @@ import THREE from "three";
       
       if (userID == ourUserID) return;
 
-      let element: HTMLElement;
+      let element: AFrame.Entity;
 
       if (this.$data.playerObjects[userID] !== undefined) {
         element = this.$data.playerObjects[userID];
@@ -202,8 +202,14 @@ import THREE from "three";
         remoteUserStore.appendChild(element);
       }
 
-      element.setAttribute("position", `${data.position.x} ${data.position.y} ${data.position.z}`);
-      element.setAttribute("rotation", `${data.rotation._x} ${data.rotation._y} ${data.rotation._z}`);
+      if (element.object3D !== undefined) {
+        element.object3D.position.set(data.position.x, data.position.y, data.position.z);
+        element.object3D.rotation.setFromQuaternion(new THREE.Quaternion(
+          data.rotation._x, data.rotation._y, data.rotation._z, data.rotation._w
+        ));
+      } else {
+        element.setAttribute("position", `${data.position.x} ${data.position.y} ${data.position.z}`);
+      }
 
       console.log(data);
     }
@@ -216,9 +222,15 @@ import THREE from "three";
       const playerRig: AFrame.Entity = this.$refs.playerRig;
       const playerCamera: AFrame.Entity = this.$refs.playerCamera;
 
+      const playerPosition: THREE.Vector3 = new THREE.Vector3();
+      const playerQuaternion: THREE.Quaternion = new THREE.Quaternion();
+      const playerScale: THREE.Vector3 = new THREE.Vector3();
+
+      playerCamera.object3D.matrixWorld.decompose(playerPosition, playerQuaternion, playerScale);
+
       this.$emit("network-event", "player/transform", {
-        position: playerRig.object3D.position,
-        rotation: playerCamera.object3D.rotation
+        position: playerPosition,
+        rotation: playerQuaternion
       });
     }, 100);
 
