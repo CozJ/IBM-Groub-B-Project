@@ -1,18 +1,28 @@
 <template>
   <!--Assets-->
   <a-assets>
+    <!-- UI -->
     <canvas ref="uiCanvas" id="ui-canvas"></canvas>
-    <img id="vrTripleDot" :src="require('../assets/ui/more_horiz.svg')">
-    <a-assets-item
-      id="asset-remote-user"
-      :src="require('../assets/players/remote_user.gltf')"
-    ></a-assets-item>
+    <img id="vrTripleDot" width="256" height="256" :src="require('../assets/ui/more_horiz.svg')">
 
     <a-assets-item
       :id="'emote-image-' + name"
       v-for="name in emotes"
       :key="'emote-image-' + name"
       :src="require('../assets/emotes/' + name + '.png')"
+    ></a-assets-item>
+    <img
+      :id="'emote-icon-' + name"
+      v-for="name in emotes"
+      width="256" height="256"
+      :key="'emote-icon-' + name"
+      :src="require('../assets/emotes/icons/' + name + '.svg')"
+    >
+
+    <!-- Remote users -->
+    <a-assets-item
+      id="asset-remote-user"
+      :src="require('../assets/players/remote_user.gltf')"
     ></a-assets-item>
   </a-assets>
 
@@ -55,17 +65,27 @@
         cursor="maxDistance: 5;"
       >
       </a-entity>
-      <a-plane
+      <a-entity
         id="vrMenu"
         show-on-enter-vr-click
         visible="false"
         position="0 -0.17 -0.4"
         scale="0.05 0.05 0.05"
-        transparent="true"
         rotation="-20 0 0"
-        src="#vrTripleDot"
       >
-      </a-plane>
+        <a-plane
+          transparent="true"
+          src="#vrTripleDot"
+          :position="`${0 - (emotes.length / 2)} 0 0`"
+        />
+        <a-plane
+          v-for="(name, index) in emotes"
+          :key="'emote-button-vr-' + name"
+          transparent="true"
+          :src="'#emote-icon-' + name"
+          :position="`${index + 1 - (emotes.length / 2)} 0 0`"
+        />
+      </a-entity>
       <a-image
         id="local-emote"
         ref="localEmote"
@@ -76,7 +96,7 @@
         scale="0.00075 0.00075 0.00075"
         geometry="primitive: plane;"
         material="src: #emote-image-unamused"
-        clickable
+        transparent="true"
       ></a-image>
     </a-entity>
     <!-- Hands -->
