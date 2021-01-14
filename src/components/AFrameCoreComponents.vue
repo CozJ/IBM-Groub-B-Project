@@ -116,14 +116,13 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import RemoteUser from "@/components/RemoteUser.vue"; // @ is an alias to /src
+import RemoteUser from "@/components/RemoteUser";
 
 import AFrame from "aframe";
 import * as THREE from "three";
 
 @Options({
   components: {
-    RemoteUser
   },
   data: function() {
     return {
@@ -191,27 +190,10 @@ import * as THREE from "three";
       
       if (userID == ourUserID) return;
 
-      let element: AFrame.Entity;
+      const remoteUser: RemoteUser = this.$data.playerObjects[userID] ?? new RemoteUser(remoteUserStore);
+      this.$data.playerObjects[userID] = remoteUser;
 
-      if (this.$data.playerObjects[userID] !== undefined) {
-        element = this.$data.playerObjects[userID];
-      } else {
-        element = document.createElement("a-entity");
-        element.setAttribute("gltf-model", "#asset-remote-user");
-        this.$data.playerObjects[userID] = element;
-        remoteUserStore.appendChild(element);
-      }
-
-      if (element.object3D !== undefined) {
-        element.object3D.position.set(data.position.x, data.position.y, data.position.z);
-        element.object3D.rotation.setFromQuaternion(new THREE.Quaternion(
-          data.rotation._x, data.rotation._y, data.rotation._z, data.rotation._w
-        ));
-      } else {
-        element.setAttribute("position", `${data.position.x} ${data.position.y} ${data.position.z}`);
-      }
-
-      console.log(data);
+      remoteUser.setNetworkTransform(data);
     }
   },
   mounted: function() {
