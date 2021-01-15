@@ -20,8 +20,8 @@
     ></a-assets-item>
   </a-assets>
 
-  <!--SkyBox-->
-  <!--<a-entity environment="preset: forest" position="0 -5 0"></a-entity>-->
+  <!-- Skybox -->
+  <a-entity cubemap="folder: /GenericSkybox/"></a-entity>
 
   <!--Objects-->
   <a-box
@@ -41,6 +41,7 @@
   <a-entity
     body="type: static; shape: box"
     gltf-model="#room-obj"
+    cube-env-map="path: /LythwoodSkybox/; extension: jpg; reflectivity: 0.4;"
     position="0 0 5"
     scale="1 1 1"
   ></a-entity>
@@ -55,7 +56,7 @@
   <a-entity
     body="type: static; shape: box"
     obj-model="obj: #asset-objects-chairComfy-obj; mtl: #asset-objects-chairComfy-mtl;"
-    position="-4 0.5 14"
+    position="-7 0.5 14"
     rotation="0 135 0"
     scale="0.75 0.75 0.75"
   ></a-entity>
@@ -63,16 +64,14 @@
   <!--lights-->
   <a-light
     type="ambient"
-    intensity="0.3"
+    intensity="0.4"
     color="#fff"
     position="0 0 0"
   ></a-light>
-  <a-light
-    type="directional"
-    intensity="2"
-    color="#fff"
+  <a-entity
+    light="type: directional; intensity: 1"
     position="0 20 20"
-  ></a-light>
+  ></a-entity>
 </template>
 
 <script lang="ts">
