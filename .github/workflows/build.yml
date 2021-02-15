@@ -62,7 +62,7 @@ jobs:
           ref: deployment
 
       - run: |
-          git reset --hard 57d4ffdb8c6cf59ceac95634d44a650b4de176e6
+          git reset --hard c9f9245001ab31096b5a56e6dae620ce36b72357
           rm -rf dist
 
       - uses: actions/download-artifact@v2
