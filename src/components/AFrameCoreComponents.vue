@@ -342,19 +342,21 @@ import * as THREE from "three";
       }
     });
 
+    const sendEmote = this.sendEmote;
+
     AFrame.registerComponent("pick-emote", {
       schema: {
-        emote: {type: 'string', default: ''}
+        emote: {type: 'string', default: "happy"}
       },
 
       init: function(){
         const data = this.data;
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element.sceneEl as HTMLElement;
-        Element.addEventListener("click", function(){
-          Element.emit('sendEmote', {value: data.emote}, false);
-          console.log('data.emote');
-        });
+        console.log(data);
+        Element.addEventListener("click", function(evt)
+        {sendEmote(data);}
+        );
       }
     })
 
