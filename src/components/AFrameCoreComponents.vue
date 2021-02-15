@@ -44,7 +44,7 @@
     id="vrMenu"
     show-menu
     clickable
-    color="blue"
+    color="green"
     position="-5 1 -4"
     scale="1 1 1"
     rotation="-20 0 0"
@@ -58,6 +58,7 @@
     movement-controls="constrainToNavMesh: true"
     position="0 0 0"
   >
+    <!--super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"-->
     <a-entity
       ref="playerCamera"
       camera
@@ -66,7 +67,6 @@
       position="0 1.8 0"
       look-controls="pointerLockEnabled: true"
       body="type: static; shape: sphere; sphereRadius: 0.001"
-      super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"
     >
       <a-entity 
         hide-on-enter-vr-click
@@ -82,7 +82,7 @@
         id="vrMenu"
         show-on-enter-vr-click
         visible="false"
-        position="0 -0.17 -0.4"
+        position="0 0.20 -0.6"
         scale="0.05 0.05 0.05"
         rotation="-20 0 0"
       >
@@ -97,6 +97,7 @@
           transparent="true"
           :src="'#emote-icon-' + name"
           :position="`${index + 1 - (emotes.length / 2)} 0 0`"
+          :pick-emote="name"
         />
       </a-entity>
       <a-image
@@ -110,14 +111,15 @@
         geometry="primitive: plane;"
         material="src: #emote-image-unamused"
         transparent="true"
-      ></a-image>
+      ></a-image>-
     </a-entity>
     <!-- Hands -->
-    <a-entity
-      sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity> <!--might be unnessecary-->
+    <!--<a-entity
+      sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity> might be unnessecary-->
 
-    <a-entity
-      sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity> <!--might be unnessecary-->
+    <!--<a-entity
+      sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity> might be unnessecary-->
+      <a-entity laser-controls="hand: right" raycaster="showLine: true; far: 100" line="color: orange; opacity: 0.5" ></a-entity>
   </a-entity>
 
   <!-- Remote user store -->
@@ -323,15 +325,38 @@ import * as THREE from "three";
       init: function() {
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element as HTMLElement;
+        let active = false;
 
-        Element.addEventListener("mouseenter", function(){
-          Element.setAttribute("color", "red")
+        Element.addEventListener("click", function(){
+          if (active == false)
+          {
+              active = true
+              Element.setAttribute("color", "red")
+          }
+          else if(active == true)
+          {
+              active = false
+              Element.setAttribute("color", "blue")
+          }
         })
-        Element.addEventListener("mouseleave", function(){
-          Element.setAttribute("color", "blue")
-        });
       }
     });
+
+    AFrame.registerComponent("pick-emote", {
+      schema: {
+        emote: {type: 'string', default: ''}
+      },
+
+      init: function(){
+        const data = this.data;
+        const Element: AFrame.Entity = this.el;
+        const sceneEl = Element.sceneEl as HTMLElement;
+        Element.addEventListener("click", function(){
+          Element.emit('sendEmote', {value: data.emote}, false);
+          console.log('data.emote');
+        });
+      }
+    })
 
   },
   unmounted: function() {
