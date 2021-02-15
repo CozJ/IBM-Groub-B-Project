@@ -327,13 +327,6 @@ import * as THREE from "three";
         ctx.rect(Math.random() * 1180, Math.random() * 620, 100, 100);
         ctx.fillStyle = ["red", "green", "blue", "yellow"][Math.floor(Math.random() * 4)];
         ctx.fill();
-
-        const board: AFrame.Entity = this.$refs.screenshareBoard;
-        const boardMesh: THREE.Mesh = board.getObject3D('mesh').children[0] as THREE.Mesh;
-        const screenMaterial: THREE.MeshPhongMaterial = (boardMesh.material as THREE.MeshPhongMaterial[])[0];
-        screenMaterial.needsUpdate = true;
-        screenMaterial.map = new THREE.CanvasTexture(canvas);
-        screenMaterial.map.needsUpdate = true;
         
         setInterval(() => {
           const board: AFrame.Entity = this.$refs.screenshareBoard;
@@ -348,7 +341,6 @@ import * as THREE from "three";
           screenMaterial.needsUpdate = true;
           screenMaterial.map = new THREE.CanvasTexture(canvas);
         }, 100);
-
 
         // Key handler
         document.addEventListener('keypress', (event: KeyboardEvent) => {
