@@ -172,6 +172,17 @@ import RemoteUser from "@/components/RemoteUser";
 import AFrame from "aframe";
 import * as THREE from "three";
 
+// workaround
+declare global {
+  interface MediaDevices {
+    getDisplayMedia(constraints?: MediaStreamConstraints): Promise<MediaStream>;
+  }
+
+  interface MediaStreamConstraints {
+    cursor?: ConstrainDOMString;
+  }
+}
+
 @Options({
   components: {
   },
@@ -195,7 +206,8 @@ import * as THREE from "three";
   methods: {
     /* User interface */
     shareVideo: function() {
-      navigator.mediaDevices.getUserMedia({ video: true }).then(
+      
+      navigator.mediaDevices.getDisplayMedia({ cursor: 'motion' }).then(
         stream => {
           const video: HTMLVideoElement = this.$refs.screenshareVideo;
           video.srcObject = stream;
