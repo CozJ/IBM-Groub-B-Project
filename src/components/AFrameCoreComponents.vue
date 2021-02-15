@@ -4,7 +4,7 @@
 
   <a-assets>
     <!-- UI -->
-    <canvas ref="uiCanvas" id="ui-canvas"></canvas>
+    <canvas ref="uiCanvas" id="ui-canvas" width="1280" height="720"></canvas>
     <img id="vrTripleDot" width="256" height="256" :src="require('../assets/ui/more_horiz.svg')">
 
     <a-assets-item
@@ -38,6 +38,10 @@
     ></a-assets-item>
   </a-assets>
 
+  <video ref="screenshareVideo" autoplay muted>
+    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+  </video>
+
   <a-entity
     id="screenshare-board"
     ref="screenshareBoard"
@@ -56,7 +60,7 @@
     id="vrMenu"
     show-menu
     clickable
-    color="blue"
+    color="green"
     position="-5 1 -4"
     scale="1 1 1"
     rotation="-20 0 0"
@@ -70,6 +74,7 @@
     movement-controls="constrainToNavMesh: true"
     position="0 0 0"
   >
+    <!--super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"-->
     <a-entity
       ref="playerCamera"
       camera
@@ -78,7 +83,6 @@
       position="0 1.8 0"
       look-controls="pointerLockEnabled: true"
       body="type: static; shape: sphere; sphereRadius: 0.001"
-      super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"
     >
       <a-entity 
         hide-on-enter-vr-click
@@ -94,7 +98,7 @@
         id="vrMenu"
         show-on-enter-vr-click
         visible="false"
-        position="0 -0.17 -0.4"
+        position="0 0.20 -0.6"
         scale="0.05 0.05 0.05"
         rotation="-20 0 0"
       >
@@ -109,6 +113,7 @@
           transparent="true"
           :src="'#emote-icon-' + name"
           :position="`${index + 1 - (emotes.length / 2)} 0 0`"
+          :pick-emote="name"
         />
       </a-entity>
       <a-image
@@ -122,14 +127,15 @@
         geometry="primitive: plane;"
         material="src: #emote-image-unamused"
         transparent="true"
-      ></a-image>
+      ></a-image>-
     </a-entity>
     <!-- Hands -->
-    <a-entity
-      sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity> <!--might be unnessecary-->
+    <!--<a-entity
+      sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity> might be unnessecary-->
 
-    <a-entity
-      sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity> <!--might be unnessecary-->
+    <!--<a-entity
+      sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity> might be unnessecary-->
+      <a-entity laser-controls="hand: right" raycaster="showLine: true; far: 100" line="color: orange; opacity: 0.5" ></a-entity>
   </a-entity>
 
   <!-- Remote user store -->
@@ -142,7 +148,7 @@
     <div id="favorites-menu">
       <material-button class="material-icons em-3 orange">star</material-button>
       <material-button class="material-icons em-3">create</material-button>
-      <material-button class="material-icons em-3">tv</material-button>
+      <material-button class="material-icons em-3" @click="shareVideo">tv</material-button>
     </div>
     <material-button class="material-icons em-3 orange" @click="helpButton"
       >help</material-button
@@ -188,6 +194,27 @@ import * as THREE from "three";
   },
   methods: {
     /* User interface */
+    shareVideo: function() {
+      navigator.mediaDevices.getUserMedia({ video: true }).then(
+        stream => {
+          const video: HTMLVideoElement = this.$refs.screenshareVideo;
+          video.srcObject = stream;
+          const canvas: HTMLCanvasElement = this.$refs.uiCanvas;
+          const ctx: CanvasRenderingContext2D = canvas.getContext(
+            "2d"
+          ) as CanvasRenderingContext2D;
+
+          function drawFrame() {
+            ctx.drawImage(video, 0, 0, 1280, 720);
+            requestAnimationFrame(drawFrame);
+          }
+
+          drawFrame();
+        }).catch(
+        error => {
+          alert( 'error while accessing usermedia ' + error.toString() );
+        });
+    },
     helpButton: function() {
       alert("Help");
     },
@@ -297,14 +324,21 @@ import * as THREE from "three";
         ) as CanvasRenderingContext2D;
 
         ctx.beginPath();
-        ctx.rect(20, 20, 150, 100);
-        ctx.fillStyle = "blue";
+        ctx.rect(Math.random() * 1180, Math.random() * 620, 100, 100);
+        ctx.fillStyle = ["red", "green", "blue", "yellow"][Math.floor(Math.random() * 4)];
         ctx.fill();
 
         const board: AFrame.Entity = this.$refs.screenshareBoard;
         const boardMesh: THREE.Mesh = board.getObject3D('mesh').children[0] as THREE.Mesh;
         const screenMaterial: THREE.MeshPhongMaterial = (boardMesh.material as THREE.MeshPhongMaterial[])[0];
+        screenMaterial.needsUpdate = true;
         screenMaterial.map = new THREE.CanvasTexture(canvas);
+        screenMaterial.map.needsUpdate = true;
+        
+        setInterval(() => {
+          screenMaterial.map = new THREE.CanvasTexture(canvas);
+        }, 100);
+
 
         // Key handler
         document.addEventListener('keypress', (event: KeyboardEvent) => {
@@ -345,15 +379,40 @@ import * as THREE from "three";
       init: function() {
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element as HTMLElement;
+        let active = false;
 
-        Element.addEventListener("mouseenter", function(){
-          Element.setAttribute("color", "red")
+        Element.addEventListener("click", function(){
+          if (active == false)
+          {
+              active = true
+              Element.setAttribute("color", "red")
+          }
+          else if(active == true)
+          {
+              active = false
+              Element.setAttribute("color", "blue")
+          }
         })
-        Element.addEventListener("mouseleave", function(){
-          Element.setAttribute("color", "blue")
-        });
       }
     });
+
+    const sendEmote = this.sendEmote;
+
+    AFrame.registerComponent("pick-emote", {
+      schema: {
+        emote: {type: 'string', default: "happy"}
+      },
+
+      init: function(){
+        const data = this.data;
+        const Element: AFrame.Entity = this.el;
+        const sceneEl = Element.sceneEl as HTMLElement;
+        console.log(data);
+        Element.addEventListener("click", function(evt)
+        {sendEmote(data);}
+        );
+      }
+    })
 
   },
   unmounted: function() {
