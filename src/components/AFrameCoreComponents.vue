@@ -336,6 +336,16 @@ import * as THREE from "three";
         screenMaterial.map.needsUpdate = true;
         
         setInterval(() => {
+          const board: AFrame.Entity = this.$refs.screenshareBoard;
+          // Wait until we're actually loaded
+          if (board.getObject3D === undefined) return;
+
+          const boardGroup: THREE.Mesh = board.getObject3D('mesh') as THREE.Mesh;
+          if (boardGroup === undefined) return;
+
+          const boardMesh: THREE.Mesh = boardGroup.children[0] as THREE.Mesh;
+          const screenMaterial: THREE.MeshPhongMaterial = (boardMesh.material as THREE.MeshPhongMaterial[])[0];
+          screenMaterial.needsUpdate = true;
           screenMaterial.map = new THREE.CanvasTexture(canvas);
         }, 100);
 
