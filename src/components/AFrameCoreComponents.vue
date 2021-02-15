@@ -21,6 +21,16 @@
       :src="require('../assets/emotes/icons/' + name + '.svg')"
     >
 
+    <!-- Room persistent objects -->
+    <a-assets-item
+      id="asset-objects-screen-mtl"
+      :src="require('../assets/room/objects/screen.mtl')"
+    ></a-assets-item>
+    <a-assets-item
+      id="asset-objects-screen-obj"
+      :src="require('../assets/room/objects/screen.obj')"
+    ></a-assets-item>
+
     <!-- Remote users -->
     <a-assets-item
       id="asset-remote-user"
@@ -28,17 +38,19 @@
     ></a-assets-item>
   </a-assets>
 
-  <a-box
-    id="aframe-interactable"
+  <a-entity
+    id="screenshare-board"
+    ref="screenshareBoard"
     hoverable
     grabbable
     draggable
     droppable
-    material="src:#ui-canvas"
-    position="0 1 -8"
-    rotation="0 45 45"
-    scale="1 1 1"
-  ></a-box>
+    body="type: static; shape: box"
+    obj-model="obj: #asset-objects-screen-obj; mtl: #asset-objects-screen-mtl;"
+    position="6 2 -4"
+    rotation="0 180 0"
+    scale="2 2 2"
+  ></a-entity>
 
   <a-box
     id="vrMenu"
@@ -175,6 +187,7 @@ import * as THREE from "three";
     msg: String
   },
   methods: {
+    /* User interface */
     helpButton: function() {
       alert("Help");
     },
@@ -220,6 +233,8 @@ import * as THREE from "three";
         this.$data.emoteTimeout = null;
       }, 2000);
     },
+
+    /* Utility functions */
     getRemoteUser: function(data: {userID: string}) {
       const userID: string = data.userID;
       const remoteUserStore: AFrame.Entity = this.$refs.remoteUserStore;
@@ -233,6 +248,8 @@ import * as THREE from "three";
 
       return remoteUser;
     },
+
+    /* Network recv events */
     updatePlayerTransform: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
