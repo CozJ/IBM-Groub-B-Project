@@ -31,7 +31,7 @@ import AFrameCoreComponents from "@/components/AFrameCoreComponents.vue"; // @ i
 @Options({
   data: function () {
     return {
-      deepstreamClient: new DeepstreamClient('localhost:6020'),
+      deepstreamClient: new DeepstreamClient('docker-9e7eb339-6bd7-4119-9357-d895ea23b7f9.azurewebsites.net'),
       userID: null
     }
   },
