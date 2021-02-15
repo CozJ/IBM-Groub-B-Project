@@ -84,7 +84,7 @@
       look-controls="pointerLockEnabled: true"
       body="type: static; shape: sphere; sphereRadius: 0.001"
     >
-      <a-entity
+      <a-entity 
         hide-on-enter-vr-click
         visible="true"
         position="0 0 -0.1"
@@ -267,7 +267,7 @@ import * as THREE from "three";
       const remoteUserStore: AFrame.Entity = this.$refs.remoteUserStore;
 
       const ourUserID: string = this.$parent.$data.userID;
-
+      
       if (userID === ourUserID) return undefined;
 
       const remoteUser: RemoteUser = this.$data.playerObjects[userID] ?? new RemoteUser(remoteUserStore);
@@ -328,16 +328,15 @@ import * as THREE from "three";
         ctx.fillStyle = ["red", "green", "blue", "yellow"][Math.floor(Math.random() * 4)];
         ctx.fill();
 
+        const board: AFrame.Entity = this.$refs.screenshareBoard;
+        const boardMesh: THREE.Mesh = board.getObject3D('mesh').children[0] as THREE.Mesh;
+        const screenMaterial: THREE.MeshPhongMaterial = (boardMesh.material as THREE.MeshPhongMaterial[])[0];
+        screenMaterial.needsUpdate = true;
+        screenMaterial.map = new THREE.CanvasTexture(canvas);
+        screenMaterial.map.needsUpdate = true;
+        
         setInterval(() => {
-          const board: AFrame.Entity = this.$refs.screenshareBoard;
-          // Wait until we're actually loaded
-          if (board.getObject3D === undefined) return;
-
-          const boardMesh: THREE.Mesh = board.getObject3D('mesh').children[0] as THREE.Mesh;
-          const screenMaterial: THREE.MeshPhongMaterial = (boardMesh.material as THREE.MeshPhongMaterial[])[0];
-          screenMaterial.needsUpdate = true;
           screenMaterial.map = new THREE.CanvasTexture(canvas);
-          screenMaterial.map.needsUpdate = true;
         }, 100);
 
 
@@ -380,18 +379,27 @@ import * as THREE from "three";
       init: function() {
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element as HTMLElement;
+        const scene = sceneEl.querySelectorAll('emotes-menu')
         let active = false;
 
         Element.addEventListener("click", function(){
           if (active == false)
           {
               active = true
-              Element.setAttribute("color", "red")
+              var i;
+              for (i = 0; i < scene.length; i++)
+              {
+                scene[i].setAttribute("visible", "false");
+              }
           }
           else if(active == true)
           {
               active = false
-              Element.setAttribute("color", "blue")
+              var i;
+              for (i = 0; i < scene.length; i++)
+              {
+                scene[i].setAttribute("visible", "true");
+              }
           }
         })
       }
