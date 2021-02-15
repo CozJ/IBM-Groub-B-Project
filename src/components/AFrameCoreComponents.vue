@@ -298,7 +298,7 @@ import * as THREE from "three";
 
         ctx.beginPath();
         ctx.rect(20, 20, 150, 100);
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "blue";
         ctx.fill();
 
         // Key handler
