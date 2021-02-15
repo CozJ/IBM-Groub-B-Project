@@ -336,6 +336,16 @@ import * as THREE from "three";
         screenMaterial.map.needsUpdate = true;
         
         setInterval(() => {
+          const board: AFrame.Entity = this.$refs.screenshareBoard;
+          // Wait until we're actually loaded
+          if (board.getObject3D === undefined) return;
+
+          const boardGroup: THREE.Mesh = board.getObject3D('mesh') as THREE.Mesh;
+          if (boardGroup === undefined) return;
+
+          const boardMesh: THREE.Mesh = boardGroup.children[0] as THREE.Mesh;
+          const screenMaterial: THREE.MeshPhongMaterial = (boardMesh.material as THREE.MeshPhongMaterial[])[0];
+          screenMaterial.needsUpdate = true;
           screenMaterial.map = new THREE.CanvasTexture(canvas);
         }, 100);
 
@@ -386,7 +396,7 @@ import * as THREE from "three";
           if (active == false)
           {
               active = true
-              var i;
+              let i;
               for (i = 0; i < scene.length; i++)
               {
                 scene[i].setAttribute("visible", "false");
@@ -395,7 +405,7 @@ import * as THREE from "three";
           else if(active == true)
           {
               active = false
-              var i;
+              let i;
               for (i = 0; i < scene.length; i++)
               {
                 scene[i].setAttribute("visible", "true");
