@@ -388,8 +388,7 @@ import * as THREE from "three";
           if (active == false)
           {
               active = true
-              var i;
-              for (i = 0; i < scene.length; i++)
+              for (let i = 0; i < scene.length; i++)
               {
                 scene[i].setAttribute("visible", "false");
               }
@@ -397,8 +396,7 @@ import * as THREE from "three";
           else if(active == true)
           {
               active = false
-              var i;
-              for (i = 0; i < scene.length; i++)
+              for (let i = 0; i < scene.length; i++)
               {
                 scene[i].setAttribute("visible", "true");
               }
