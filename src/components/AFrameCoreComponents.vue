@@ -301,6 +301,11 @@ import * as THREE from "three";
         ctx.fillStyle = "blue";
         ctx.fill();
 
+        const board: AFrame.Entity = this.$refs.screenshareBoard;
+        const boardMesh: THREE.Mesh = board.getObject3D('mesh').children[0] as THREE.Mesh;
+        const screenMaterial: THREE.MeshPhongMaterial = (boardMesh.material as THREE.MeshPhongMaterial[])[0];
+        screenMaterial.map = new THREE.CanvasTexture(canvas);
+
         // Key handler
         document.addEventListener('keypress', (event: KeyboardEvent) => {
           const regex = /Digit([1-9])/;
