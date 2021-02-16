@@ -223,6 +223,12 @@ declare global {
           this.$data.activeStream = stream;
           this.displayStream(stream);
 
+          // Abandon existing connections
+          for (const value of Object.values(this.$data.p2pConnections) as Array<SimplePeer.Instance>) {
+            value.destroy();
+          }
+          this.$data.p2pConnections = {};
+
           // Request that people in the room connect to us via RTC
           this.$emit("network-event", "player/start-stream", {});
         }).catch(
@@ -352,6 +358,12 @@ declare global {
 
       if (typeof remoteUser === "undefined")
         return;
+
+      // Abandon existing connections
+      for (const value of Object.values(this.$data.p2pConnections) as Array<SimplePeer.Instance>) {
+        value.destroy();
+      }
+      this.$data.p2pConnections = {};
 
       const p2pConnection: SimplePeer.Instance = this.getPeerConnection(remoteUser.userID, {
         initiator: false
