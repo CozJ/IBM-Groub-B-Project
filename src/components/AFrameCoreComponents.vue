@@ -4,8 +4,10 @@
 
   <a-assets>
     <!-- UI -->
-    <canvas ref="uiCanvas" id="ui-canvas" width="1280" height="720"></canvas>
     <img id="vrTripleDot" width="256" height="256" :src="require('../assets/ui/more_horiz.svg')">
+
+    <!-- Screenshare -->
+    <canvas ref="uiCanvas" id="ui-canvas" width="1280" height="720"></canvas>
 
     <a-assets-item
       :id="'emote-image-' + name"
@@ -38,10 +40,6 @@
     ></a-assets-item>
   </a-assets>
 
-  <video ref="screenshareVideo" autoplay muted>
-    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-  </video>
-
   <a-entity
     id="screenshare-board"
     ref="screenshareBoard"
@@ -55,6 +53,8 @@
     rotation="0 180 0"
     scale="2 2 2"
   ></a-entity>
+
+  <video class="canvasReader" ref="screenshareVideo" autoplay muted></video>
 
   <a-box
     id="vrMenu"
@@ -506,5 +506,13 @@ material-button, material-button-svg {
       max-height: (5 * 3.6em);
     }
   }
+}
+
+a-scene video.canvasReader {
+  display: initial;
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0.001;
 }
 </style>
