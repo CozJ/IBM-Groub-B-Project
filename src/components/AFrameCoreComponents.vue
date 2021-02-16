@@ -311,7 +311,7 @@ declare global {
 
       return remoteUser;
     },
-    getPeerConnection: function(userID: string, opts: SimplePeer.Options, ifNew: (connection: SimplePeer.Instance) => void) {
+    getPeerConnection: function(userID: string, opts: SimplePeer.Options, ifNew: (connection: SimplePeer.Instance) => void | null) {
       if (!this.$data.p2pConnections[userID]) {
         const p2pConnection: SimplePeer.Instance = this.$data.p2pConnections[userID] = new SimplePeer(opts);
 
@@ -324,7 +324,7 @@ declare global {
           });
         });
 
-        ifNew(p2pConnection);
+        if(ifNew) ifNew(p2pConnection);
       }
 
       return this.$data.p2pConnections[userID];
@@ -378,7 +378,7 @@ declare global {
         const p2pConnection: SimplePeer.Instance = this.getPeerConnection(remoteUser.userID, {
           initiator: true,
           stream: this.$data.activeStream
-        }, (connection: SimplePeer.Instance) => {});
+        });
       }
     },
     streamSignal: function(data: any) {
