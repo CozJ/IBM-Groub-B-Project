@@ -313,8 +313,18 @@ declare global {
     },
     getPeerConnection: function(userID: string, opts: SimplePeer.Options, ifNew: (connection: SimplePeer.Instance) => void) {
       if (!this.$data.p2pConnections[userID]) {
-        this.$data.p2pConnections[userID] = new SimplePeer(opts);
-        ifNew(this.$data.p2pConnections[userID]);
+        const p2pConnection: SimplePeer.Instance = this.$data.p2pConnections[userID] = new SimplePeer(opts);
+
+        p2pConnection.on('signal', signal => {
+          console.log(`Recieved ${signal} from ${userID}`);
+          console.log(signal);
+          this.$emit("network-event", "player/stream-signal", {
+            peer: userID,
+            signal: signal
+          });
+        });
+
+        ifNew(p2pConnection);
       }
 
       return this.$data.p2pConnections[userID];
@@ -343,6 +353,16 @@ declare global {
       if (typeof remoteUser === "undefined")
         return;
 
+      const p2pConnection: SimplePeer.Instance = this.getPeerConnection(remoteUser.userID, {
+        initiator: false
+      }, (connection: SimplePeer.Instance) => {
+        console.log(connection);
+        connection.on('stream', remoteStream => {
+          console.log(`${remoteUser.userID} sent STREAM signal`);
+          this.displayStream(remoteStream);
+        });
+      });
+
       console.log(`${remoteUser.userID} started stream, requesting a token`);
       this.$emit("network-event", "player/stream-token-request", { streamer: remoteUser.userID });
     },
@@ -358,19 +378,10 @@ declare global {
         const p2pConnection: SimplePeer.Instance = this.getPeerConnection(remoteUser.userID, {
           initiator: true,
           stream: this.$data.activeStream
-        }, (connection: SimplePeer.Instance) => {
-          connection.on('signal', signal => {
-            console.log(`${remoteUser.userID} was sent our signal: ${signal}`);
-            console.log(signal);
-            this.$emit("network-event", "player/stream-token-response", {
-              peer: remoteUser.userID,
-              signal: signal
-            });
-          });
-        });
+        }, (connection: SimplePeer.Instance) => {});
       }
     },
-    streamTokenResponse: function(data: any) {
+    streamSignal: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
       if (typeof remoteUser === "undefined")
@@ -380,17 +391,10 @@ declare global {
       if (data.peer === ourUserID) {
         console.log(`${remoteUser.userID} sent us signal: ${data.signal}`);
         console.log(data.signal);
-        const p2pConnection: SimplePeer.Instance = this.getPeerConnection(remoteUser.userID, {
-          initiator: false
-        }, (connection: SimplePeer.Instance) => {
-          console.log(connection);
-          connection.on('stream', remoteStream => {
-            console.log(`${remoteUser.userID} sent STREAM signal`);
-            this.displayStream(remoteStream);
-          });
-        });
+        const p2pConnection: SimplePeer.Instance = this.$data.p2pConnections[remoteUser.userID];
 
-        p2pConnection.signal(data.signal);
+        if (p2pConnection)
+          p2pConnection.signal(data.signal);
       }
     }
   },
@@ -403,7 +407,7 @@ declare global {
     // WebRTC stream handshake
     this.$emit("network-subscribe", "player/start-stream", this.playerStartedStream);
     this.$emit("network-subscribe", "player/stream-token-request", this.streamTokenRequest);
-    this.$emit("network-subscribe", "player/stream-token-response", this.streamTokenResponse);
+    this.$emit("network-subscribe", "player/stream-signal", this.streamSignal);
 
     setInterval(() => {
       const playerRig: AFrame.Entity = this.$refs.playerRig;
@@ -553,7 +557,7 @@ declare global {
     // WebRTC stream handshake
     this.$emit("network-unsubscribe", "player/start-stream", this.playerStartedStream);
     this.$emit("network-unsubscribe", "player/stream-token-request", this.streamTokenRequest);
-    this.$emit("network-unsubscribe", "player/stream-token-response", this.streamTokenResponse);
+    this.$emit("network-unsubscribe", "player/stream-signal", this.streamSignal);
   }
 })
 
