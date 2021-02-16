@@ -19,6 +19,7 @@
     "aframe-physics-system": "^4.0.1",
     "core-js": "^3.6.5",
     "material-design-icons": "^3.0.1",
+    "simple-peer": "^9.9.3",
     "super-hands": "^3.0.2",
     "uuid": "^8.3.2",
     "vue": "^3.0.0",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@types/aframe": "^1.0.2",
     "@types/jest": "^24.0.19",
+    "@types/simple-peer": "^9.6.1",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",

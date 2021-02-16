@@ -24,6 +24,7 @@
 import { Options, Vue } from "vue-class-component";
 import { DeepstreamClient } from "@deepstream/client";
 import { CONNECTION_STATE, JSONValue } from "@deepstream/client/src/constants";
+import SimplePeer from "simple-peer";
 import { v4 as uuidv4 } from "uuid";
 
 import AFrameCoreComponents from "@/components/AFrameCoreComponents.vue"; // @ is an alias to /src

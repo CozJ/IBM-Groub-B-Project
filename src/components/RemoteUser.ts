@@ -20,11 +20,15 @@ interface NetworkTransform {
 
 
 export default class RemoteUser {
+  userID: string;
   element: AFrame.Entity = document.createElement("a-entity");
   emote: AFrame.Entity = document.createElement("a-image");
   emoteTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 
-  constructor(parentElement: HTMLElement) {
+  constructor(parentElement: HTMLElement, userID: string) {
+    // Data
+    this.userID = userID;
+
     // Emote
     this.emote.setAttribute("width", "724");
     this.emote.setAttribute("height", "515");
