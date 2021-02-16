@@ -103,6 +103,7 @@
         rotation="-20 0 0"
       >
         <a-plane
+          show-menu
           transparent="true"
           src="#vrTripleDot"
           :position="`${0 - (emotes.length / 2)} 0 0`"
