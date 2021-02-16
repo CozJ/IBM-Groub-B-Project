@@ -32,6 +32,10 @@
       id="asset-objects-screen-obj"
       :src="require('../assets/room/objects/screen.obj')"
     ></a-assets-item>
+    <a-assets-item
+      id="asset-objects-ybot"
+      :src="require('../assets/room/objects/ybot.gltf')"
+    ></a-assets-item>
 
     <!-- Remote users -->
     <a-assets-item
@@ -53,6 +57,16 @@
     rotation="0 180 0"
     scale="2 2 2"
   ></a-entity>
+
+  <a-entity
+    id="ybot"
+    position="15 0 -5"
+    rotation="0 -45 0"
+    scale="1 1 1"
+    animation-mixer
+    :gltf-model="`${require('../assets/room/objects/ybot.gltf')}`"
+  ></a-entity>
+  <!-- The above way of handling GLTF models is extremely dumb, but for whatever reason aframe refuses to load the asset by ID reference -->
 
   <video class="canvasReader" ref="screenshareVideo" autoplay muted></video>
 
