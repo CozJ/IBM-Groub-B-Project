@@ -4,8 +4,10 @@
 
   <a-assets>
     <!-- UI -->
-    <canvas ref="uiCanvas" id="ui-canvas" width="1280" height="720"></canvas>
     <img id="vrTripleDot" width="256" height="256" :src="require('../assets/ui/more_horiz.svg')">
+
+    <!-- Screenshare -->
+    <canvas ref="uiCanvas" id="ui-canvas" width="1280" height="720"></canvas>
 
     <a-assets-item
       :id="'emote-image-' + name"
@@ -38,10 +40,6 @@
     ></a-assets-item>
   </a-assets>
 
-  <video ref="screenshareVideo" autoplay muted>
-    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-  </video>
-
   <a-entity
     id="screenshare-board"
     ref="screenshareBoard"
@@ -55,6 +53,8 @@
     rotation="0 180 0"
     scale="2 2 2"
   ></a-entity>
+
+  <video class="canvasReader" ref="screenshareVideo" autoplay muted></video>
 
   <a-box
     id="vrMenu"
@@ -173,6 +173,17 @@ import RemoteUser from "@/components/RemoteUser";
 import AFrame from "aframe";
 import * as THREE from "three";
 
+// workaround
+declare global {
+  interface MediaDevices {
+    getDisplayMedia(constraints?: MediaStreamConstraints): Promise<MediaStream>;
+  }
+
+  interface MediaStreamConstraints {
+    cursor?: ConstrainDOMString;
+  }
+}
+
 @Options({
   components: {
   },
@@ -196,7 +207,8 @@ import * as THREE from "three";
   methods: {
     /* User interface */
     shareVideo: function() {
-      navigator.mediaDevices.getUserMedia({ video: true }).then(
+      
+      navigator.mediaDevices.getDisplayMedia({ cursor: 'motion' }).then(
         stream => {
           const video: HTMLVideoElement = this.$refs.screenshareVideo;
           video.srcObject = stream;
@@ -328,13 +340,6 @@ import * as THREE from "three";
         ctx.rect(Math.random() * 1180, Math.random() * 620, 100, 100);
         ctx.fillStyle = ["red", "green", "blue", "yellow"][Math.floor(Math.random() * 4)];
         ctx.fill();
-
-        const board: AFrame.Entity = this.$refs.screenshareBoard;
-        const boardMesh: THREE.Mesh = board.getObject3D('mesh').children[0] as THREE.Mesh;
-        const screenMaterial: THREE.MeshPhongMaterial = (boardMesh.material as THREE.MeshPhongMaterial[])[0];
-        screenMaterial.needsUpdate = true;
-        screenMaterial.map = new THREE.CanvasTexture(canvas);
-        screenMaterial.map.needsUpdate = true;
         
         setInterval(() => {
           const board: AFrame.Entity = this.$refs.screenshareBoard;
@@ -349,7 +354,6 @@ import * as THREE from "three";
           screenMaterial.needsUpdate = true;
           screenMaterial.map = new THREE.CanvasTexture(canvas);
         }, 100);
-
 
         // Key handler
         document.addEventListener('keypress', (event: KeyboardEvent) => {
@@ -397,8 +401,7 @@ import * as THREE from "three";
           if (active == false)
           {
               active = true
-              let i;
-              for (i = 0; i < scene.length; i++)
+              for (let i = 0; i < scene.length; i++)
               {
                 scene[i].setAttribute("visible", "false");
               }
@@ -406,8 +409,7 @@ import * as THREE from "three";
           else if(active == true)
           {
               active = false
-              let i;
-              for (i = 0; i < scene.length; i++)
+              for (let i = 0; i < scene.length; i++)
               {
                 scene[i].setAttribute("visible", "true");
               }
@@ -505,5 +507,13 @@ material-button, material-button-svg {
       max-height: (5 * 3.6em);
     }
   }
+}
+
+a-scene video.canvasReader {
+  display: initial;
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0.001;
 }
 </style>
