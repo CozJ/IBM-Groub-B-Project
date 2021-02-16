@@ -4,7 +4,7 @@
 
   <a-assets>
     <!-- UI -->
-    <img id="vrTripleDot" width="256" height="256" :src="require('../assets/ui/more_horiz.svg')">
+    <img id="vrShareScreen" width="256" height="256" :src="require('../assets/ui/tv-24px.svg')">
 
     <!-- Screenshare -->
     <canvas ref="uiCanvas" id="ui-canvas" width="1280" height="720"></canvas>
@@ -95,7 +95,6 @@
       >
       </a-entity>
       <a-entity
-        id="vrMenu"
         show-on-enter-vr-click
         visible="false"
         position="0 0.20 -0.6"
@@ -103,9 +102,11 @@
         rotation="-20 0 0"
       >
         <a-plane
+          id="vrMenu"
           show-menu
+          share-screen
           transparent="true"
-          src="#vrTripleDot"
+          src="#vrShareScreen"
           :position="`${0 - (emotes.length / 2)} 0 0`"
         />
         <a-plane
@@ -113,6 +114,7 @@
           :key="'emote-button-vr-' + name"
           transparent="true"
           :src="'#emote-icon-' + name"
+          :id="'button'"
           :position="`${index + 1 - (emotes.length / 2)} 0 0`"
           :pick-emote="name"
         />
@@ -394,7 +396,7 @@ declare global {
       init: function() {
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element as HTMLElement;
-        const scene = sceneEl.querySelectorAll('emotes-menu')
+        const scene = sceneEl.querySelectorAll('Button')
         let active = false;
 
         Element.addEventListener("click", function(){
@@ -404,6 +406,7 @@ declare global {
               for (let i = 0; i < scene.length; i++)
               {
                 scene[i].setAttribute("visible", "false");
+                console.log(scene[i]);
               }
           }
           else if(active == true)
@@ -412,6 +415,7 @@ declare global {
               for (let i = 0; i < scene.length; i++)
               {
                 scene[i].setAttribute("visible", "true");
+                console.log(scene[i]);
               }
           }
         })
@@ -436,12 +440,27 @@ declare global {
       }
     })
 
+    const shareVideo = this.shareVideo;
+
+    AFrame.registerComponent("share-screen",{
+
+    init: function(){
+      
+      const Element: AFrame.Entity = this.el;
+      const sceneEl = Element.sceneEl as HTMLElement;
+
+      Element.addEventListener("click", function(evt)
+      {shareVideo()})
+      }
+    })
   },
+
   unmounted: function() {
     this.$emit("network-unsubscribe", "player/transform", this.updatePlayerTransform);
     this.$emit("network-unsubscribe", "player/emote", this.receiveEmote);
   }
 })
+
 export default class AFrameCoreComponents extends Vue {
   msg!: string;
 }
