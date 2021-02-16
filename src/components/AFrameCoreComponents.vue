@@ -174,6 +174,7 @@ import RemoteUser from "@/components/RemoteUser";
 
 import AFrame from "aframe";
 import * as THREE from "three";
+import SimplePeer from "simple-peer";
 
 // workaround
 declare global {
@@ -200,9 +201,16 @@ declare global {
         "unamused",
       ],
       emoteTimeout: null,
-      playerObjects: {}
+      playerObjects: {},
+      activeStream: null,
+      p2pConnections: {}
     }
   },
+  emits: [
+    'network-event',
+    'network-subscribe',
+    'network-unsubscribe'
+  ],
   props: {
     msg: String
   },
@@ -212,23 +220,36 @@ declare global {
       
       navigator.mediaDevices.getDisplayMedia({ cursor: 'motion' }).then(
         stream => {
-          const video: HTMLVideoElement = this.$refs.screenshareVideo;
-          video.srcObject = stream;
-          const canvas: HTMLCanvasElement = this.$refs.uiCanvas;
-          const ctx: CanvasRenderingContext2D = canvas.getContext(
-            "2d"
-          ) as CanvasRenderingContext2D;
+          this.$data.activeStream = stream;
+          this.displayStream(stream);
 
-          function drawFrame() {
-            ctx.drawImage(video, 0, 0, 1280, 720);
-            requestAnimationFrame(drawFrame);
-          }
-
-          drawFrame();
+          // Request that people in the room connect to us via RTC
+          this.$emit("network-event", "player/start-stream", {});
         }).catch(
         error => {
           alert( 'error while accessing usermedia ' + error.toString() );
         });
+    },
+    displayStream: function(stream: MediaStream) {
+      console.log(`Being asked to display ${stream}`);
+      console.log(stream);
+
+      const video: HTMLVideoElement = this.$refs.screenshareVideo;
+      
+      video.srcObject = stream;
+      video.play();
+      
+      const canvas: HTMLCanvasElement = this.$refs.uiCanvas;
+      const ctx: CanvasRenderingContext2D = canvas.getContext(
+        "2d"
+      ) as CanvasRenderingContext2D;
+
+      function drawFrame() {
+        ctx.drawImage(video, 0, 0, 1280, 720);
+        requestAnimationFrame(drawFrame);
+      }
+
+      drawFrame();
     },
     helpButton: function() {
       alert("Help");
@@ -285,10 +306,18 @@ declare global {
       
       if (userID === ourUserID) return undefined;
 
-      const remoteUser: RemoteUser = this.$data.playerObjects[userID] ?? new RemoteUser(remoteUserStore);
+      const remoteUser: RemoteUser = this.$data.playerObjects[userID] ?? new RemoteUser(remoteUserStore, userID);
       this.$data.playerObjects[userID] = remoteUser;
 
       return remoteUser;
+    },
+    getPeerConnection: function(userID: string, opts: SimplePeer.Options, ifNew: (connection: SimplePeer.Instance) => void) {
+      if (!this.$data.p2pConnections[userID]) {
+        this.$data.p2pConnections[userID] = new SimplePeer(opts);
+        ifNew(this.$data.p2pConnections[userID]);
+      }
+
+      return this.$data.p2pConnections[userID];
     },
 
     /* Network recv events */
@@ -307,12 +336,74 @@ declare global {
         return;
 
       remoteUser.setEmote(data.emoteName);
+    },
+    playerStartedStream: function(data: any) {
+      const remoteUser: RemoteUser = this.getRemoteUser(data);
+
+      if (typeof remoteUser === "undefined")
+        return;
+
+      console.log(`${remoteUser.userID} started stream, requesting a token`);
+      this.$emit("network-event", "player/stream-token-request", { streamer: remoteUser.userID });
+    },
+    streamTokenRequest: function(data: any) {
+      const remoteUser: RemoteUser = this.getRemoteUser(data);
+
+      if (typeof remoteUser === "undefined")
+        return;
+
+      const ourUserID: string = this.$parent.$data.userID;
+      if (data.streamer === ourUserID && this.$data.activeStream !== null) {
+        console.log(`${remoteUser.userID} requested a token, beginning peer connection`);
+        const p2pConnection: SimplePeer.Instance = this.getPeerConnection(remoteUser.userID, {
+          initiator: true,
+          stream: this.$data.activeStream
+        }, (connection: SimplePeer.Instance) => {
+          connection.on('signal', signal => {
+            console.log(`${remoteUser.userID} was sent our signal: ${signal}`);
+            console.log(signal);
+            this.$emit("network-event", "player/stream-token-response", {
+              peer: remoteUser.userID,
+              signal: signal
+            });
+          });
+        });
+      }
+    },
+    streamTokenResponse: function(data: any) {
+      const remoteUser: RemoteUser = this.getRemoteUser(data);
+
+      if (typeof remoteUser === "undefined")
+        return;
+
+      const ourUserID: string = this.$parent.$data.userID;
+      if (data.peer === ourUserID) {
+        console.log(`${remoteUser.userID} sent us signal: ${data.signal}`);
+        console.log(data.signal);
+        const p2pConnection: SimplePeer.Instance = this.getPeerConnection(remoteUser.userID, {
+          initiator: false
+        }, (connection: SimplePeer.Instance) => {
+          console.log(connection);
+          connection.on('stream', remoteStream => {
+            console.log(`${remoteUser.userID} sent STREAM signal`);
+            this.displayStream(remoteStream);
+          });
+        });
+
+        p2pConnection.signal(data.signal);
+      }
     }
   },
   mounted: function() {
     // When component mounted
+
+    // Player stuff
     this.$emit("network-subscribe", "player/transform", this.updatePlayerTransform);
     this.$emit("network-subscribe", "player/emote", this.receiveEmote);
+    // WebRTC stream handshake
+    this.$emit("network-subscribe", "player/start-stream", this.playerStartedStream);
+    this.$emit("network-subscribe", "player/stream-token-request", this.streamTokenRequest);
+    this.$emit("network-subscribe", "player/stream-token-response", this.streamTokenResponse);
 
     setInterval(() => {
       const playerRig: AFrame.Entity = this.$refs.playerRig;
@@ -456,8 +547,13 @@ declare global {
   },
 
   unmounted: function() {
+    // Player stuff
     this.$emit("network-unsubscribe", "player/transform", this.updatePlayerTransform);
     this.$emit("network-unsubscribe", "player/emote", this.receiveEmote);
+    // WebRTC stream handshake
+    this.$emit("network-unsubscribe", "player/start-stream", this.playerStartedStream);
+    this.$emit("network-unsubscribe", "player/stream-token-request", this.streamTokenRequest);
+    this.$emit("network-unsubscribe", "player/stream-token-response", this.streamTokenResponse);
   }
 })
 
