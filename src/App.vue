@@ -11,7 +11,8 @@
   <div id="nav">
     <router-link to="/environment-1">Environment 1</router-link> |
     <router-link to="/environment-2">Environment 2</router-link> |
-    <router-link to="/environment-3">Environment 3</router-link>
+    <router-link to="/environment-3">Environment 3</router-link> |
+    <router-link to="/environment-4">Environment 4</router-link>
   </div>
 
   <!-- Deepstream debug -->
