@@ -150,7 +150,7 @@
     <material-button class="material-icons em-3">more_horiz</material-button>
     <div id="favorites-menu">
       <material-button class="material-icons em-3 orange">star</material-button>
-      <material-button class="material-icons em-3">create</material-button>
+      <material-button class="material-icons em-3" @click="toggleChat">message</material-button>
       <material-button class="material-icons em-3" @click="shareVideo">tv</material-button>
     </div>
     <material-button class="material-icons em-3 orange" @click="helpButton"
@@ -165,6 +165,11 @@
     <div id="emotes-menu" ref="emotesMenu">
       <material-button-svg v-for="name in emotes" :key="'emote-menu-button-' + name" @click="sendEmote(name)" v-html="require('!html-loader!@/assets/emotes/icons/' + name + '.svg')" />
     </div>
+  </div>
+
+  <div ref="chatHolder" id="chat-holder">
+    <input type="text" ref="chatEntry" @keyup.enter="sendChat()">
+    <div ref="chatBacklog">Chat</div>
   </div>
 </template>
 
@@ -302,6 +307,35 @@ declare global {
         this.$data.emoteTimeout = null;
       }, 2000);
     },
+    
+    /* Chat */
+    sendChat: function() {
+      const entry: HTMLInputElement = this.$refs.chatEntry;
+
+      this.$emit("network-event", "player/send-chat-message", {
+        message: entry.value
+      });
+
+      entry.value = "";
+      entry.blur();  // defocus
+      
+      const scene: AFrame.Scene = this.$refs.playerRig.sceneEl;
+      scene.requestPointerLock();
+    },
+    receiveChat: function(data: {userID: string, message: string}) {
+      const chat: HTMLInputElement = this.$refs.chatBacklog;
+      const scrolledDown: boolean = chat.scrollHeight - chat.clientHeight <= chat.scrollTop + 1;
+
+      chat.innerText += `\n<${data.userID}> ${data.message}`;
+
+      if (scrolledDown)
+        chat.scrollTop = chat.scrollHeight - chat.clientHeight;
+    },
+    toggleChat: function() {
+      const chat: HTMLInputElement = this.$refs.chatHolder;
+      chat.style.visibility = (chat.style.visibility == 'hidden') ? 'unset' : 'hidden';
+      chat.scrollTop = chat.scrollHeight - chat.clientHeight;
+    },
 
     /* Utility functions */
     getRemoteUser: function(data: {userID: string}) {
@@ -416,6 +450,8 @@ declare global {
     // Player stuff
     this.$emit("network-subscribe", "player/transform", this.updatePlayerTransform);
     this.$emit("network-subscribe", "player/emote", this.receiveEmote);
+    // Chat
+    this.$emit("network-subscribe", "player/send-chat-message", this.receiveChat);
     // WebRTC stream handshake
     this.$emit("network-subscribe", "player/start-stream", this.playerStartedStream);
     this.$emit("network-subscribe", "player/stream-token-request", this.streamTokenRequest);
@@ -466,14 +502,26 @@ declare global {
 
         // Key handler
         document.addEventListener('keypress', (event: KeyboardEvent) => {
+          // Only listen to events when the pointer is locked
+          if (!document.pointerLockElement) return;
+
           const regex = /Digit([1-9])/;
           const match = event.code.match(regex);
 
           if (match !== null) {
             const index: number = parseInt(match[1]) - 1;
 
-            if (index < this.$data.emotes.length)
+            if (index < this.$data.emotes.length) {
+              event.preventDefault();
               this.sendEmote(this.$data.emotes[index]);
+            }
+          } else {
+            if (event.code === "KeyT") {
+              event.preventDefault();
+              const entry: HTMLInputElement = this.$refs.chatEntry;
+              document.exitPointerLock();
+              entry.focus();
+            }
           }
         });
       }
@@ -566,6 +614,8 @@ declare global {
     // Player stuff
     this.$emit("network-unsubscribe", "player/transform", this.updatePlayerTransform);
     this.$emit("network-unsubscribe", "player/emote", this.receiveEmote);
+    // Chat
+    this.$emit("network-unsubscribe", "player/send-chat-message", this.receiveChat);
     // WebRTC stream handshake
     this.$emit("network-unsubscribe", "player/start-stream", this.playerStartedStream);
     this.$emit("network-unsubscribe", "player/stream-token-request", this.streamTokenRequest);
@@ -637,6 +687,37 @@ material-button, material-button-svg {
     &.open {
       max-height: (5 * 3.6em);
     }
+  }
+}
+
+#chat-holder {
+  position: absolute;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  width: 40vw;
+  height: 50vh;
+  left: 1em;
+  bottom: 1em;
+  font-size: 1.25em;
+  
+  z-index: 2;
+  text-align: left;
+
+  div {
+    overflow-y: scroll;
+    width: auto;
+    color: white;
+    text-shadow:
+    -1.5px -1.5px 0 #000,  
+     1.5px -1.5px 0 #000,
+    -1.5px  1.5px 0 #000,
+     1.5px  1.5px 0 #000;
+  }
+
+  input {
+    width: auto;
+    font-size: 1em;
   }
 }
 

@@ -121,9 +121,10 @@ export default class App extends Vue {}
 #deepstream-debug {
   position: absolute;
   bottom: 1em;
-  font-size: 2em;
+  right: 4em;
+  font-size: 1.5em;
   font-weight: bolder;
-  text-align: center;
+  text-align: right;
   color: white;
   text-shadow:
     -1.5px -1.5px 0 #000,  
@@ -131,7 +132,7 @@ export default class App extends Vue {}
     -1.5px  1.5px 0 #000,
      1.5px  1.5px 0 #000;
   width: 100%;
-  z-index: 10;
+  z-index: 1;
 }
 
 a-scene {
