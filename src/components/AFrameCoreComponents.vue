@@ -183,7 +183,16 @@
 
   <div ref="chatHolder" id="chat-holder">
     <input type="text" ref="chatEntry" @keyup.enter="sendChat()">
-    <div ref="chatBacklog">Chat</div>
+    <div ref="chatBacklog"></div>
+  </div>
+
+  <div ref="joinScreen" id="join-screen">
+    Enter a room code and a name to start chatting.
+    <b>Room code</b>
+    <input ref="roomCode" type="text">
+    <b>Name</b>
+    <input ref="nameEntry" type="text">
+    <button @click="joinSession($refs.roomCode.value, $refs.nameEntry.value)">Join room</button>
   </div>
 </template>
 
@@ -223,6 +232,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       subscribedEvents: {},
       roomEvents: {},
       roomName: null,
+      playerName: null,
 
       timeoutEvents: [],
       intervalEvents: [],
@@ -298,8 +308,33 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       }
     },
     setRoom: function(roomName: string) {
+      if (this.$data.roomName !== null)
+        this.fireRoomEvent("player/leave");
+
       this.$data.roomName = roomName;
       this.updateRoomEvents();
+      this.fireRoomEvent("player/join", {name: this.$data.playerName});
+    },
+    joinSession: function(roomName: string, playerName: string) {
+      if (roomName.trim().length === 0) {
+        alert("Please enter a valid room code.");
+        return;
+      }
+
+      if (playerName.trim().length === 0) {
+        alert("Please enter a valid player name.");
+        return;
+      }
+
+      this.$data.playerName = playerName;
+      this.setRoom(roomName);
+
+      const joinScreen: HTMLDivElement = this.$refs.joinScreen;
+      joinScreen.style.visibility = 'hidden';
+    },
+
+    userJoined: function(data: {userID: string, name: string}) {
+      this.addChatLine(`* ${data.name} has joined room "${this.$data.roomName}"`);
     },
 
     /* User interface */
@@ -394,6 +429,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       const entry: HTMLInputElement = this.$refs.chatEntry;
 
       this.fireRoomEvent("player/send-chat-message", {
+        name: this.$data.playerName,
         message: entry.value
       });
 
@@ -403,14 +439,17 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       const scene: AFrame.Scene = this.$refs.playerRig.sceneEl;
       scene.requestPointerLock();
     },
-    receiveChat: function(data: {userID: string, message: string}) {
+    addChatLine: function(line: string) {
       const chat: HTMLInputElement = this.$refs.chatBacklog;
       const scrolledDown: boolean = chat.scrollHeight - chat.clientHeight <= chat.scrollTop + 1;
 
-      chat.innerText += `\n<${data.userID}> ${data.message}`;
+      chat.innerText += `\n${line}`;
 
       if (scrolledDown)
         chat.scrollTop = chat.scrollHeight - chat.clientHeight;
+    },
+    receiveChat: function(data: {userID: string, name: string, message: string}) {
+      this.addChatLine(`<${data.name}> ${data.message}`);
     },
     toggleChat: function() {
       const chat: HTMLInputElement = this.$refs.chatHolder;
@@ -528,9 +567,11 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
   mounted: function() {
     // When component mounted
 
-    // Player stuff
+    // Player interaction stuff
     this.setRoomEvent("player/transform", this.updatePlayerTransform);
     this.setRoomEvent("player/emote", this.receiveEmote);
+    // Connections
+    this.setRoomEvent("player/join", this.userJoined);
     // Chat
     this.setRoomEvent("player/send-chat-message", this.receiveChat);
     // WebRTC stream handshake
@@ -802,6 +843,39 @@ material-button, material-button-svg {
   input {
     width: auto;
     font-size: 1em;
+  }
+}
+
+#join-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: rgba(200, 200, 200, .75);
+  backdrop-filter: blur(8px);
+  font-size: 1.75em;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+
+  > * {
+    margin: .2em 0;
+  }
+
+  input {
+    font-size: 1em;
+    width: calc(max(20em, 40vw));
+  }
+
+  button {
+    font-size: 1em;
+    width: calc(max(10em, 25vw));
+    padding: .25em;
   }
 }
 
