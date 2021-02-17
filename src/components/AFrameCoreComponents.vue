@@ -98,7 +98,7 @@
       look-controls="pointerLockEnabled: true"
       body="type: static; shape: sphere; sphereRadius: 0.001"
     >
-      <a-entity 
+      <a-entity
         hide-on-enter-vr-click
         visible="true"
         position="0 0 -0.1"
@@ -206,11 +206,27 @@ declare global {
   }
 }
 
+function registerComponentSafe(name: string, component: AFrame.ComponentDefinition<object>) {
+  // Delete the old component if it was already registered
+  if (AFrame.components[name] !== null)
+    delete AFrame.components[name];
+
+  AFrame.registerComponent(name, component);
+}
+
+
 @Options({
   components: {
   },
   data: function() {
     return {
+      subscribedEvents: {},
+      roomEvents: {},
+      roomName: null,
+
+      timeoutEvents: [],
+      intervalEvents: [],
+
       emotesOpen: false,
       emotes: [
         "happy",
@@ -220,6 +236,7 @@ declare global {
         "unamused",
       ],
       emoteTimeout: null,
+
       playerObjects: {},
       activeStream: null,
       p2pConnections: {}
@@ -234,9 +251,59 @@ declare global {
     msg: String
   },
   methods: {
+    /* JavaScript events */
+    setTimeout: function(callback: (...args: any[]) => void, ms: number) {
+      const value: NodeJS.Timeout = setTimeout(callback, ms);
+      (this.$data.timeoutEvents as NodeJS.Timeout[]).push(value);
+      return value;
+    },
+    setInterval: function(callback: (...args: any[]) => void, ms: number) {
+      const value: NodeJS.Timeout = setInterval(callback, ms);
+      (this.$data.intervalEvents as NodeJS.Timeout[]).push(value);
+      return value;
+    },
+
+    /* Deepstream events */
+    setEvent: function(eventName: string, callback: (data: object) => void) {
+      // Unsubscribe previous handler if it exists
+      if (this.$data.subscribedEvents[eventName] !== null)
+        this.$emit("network-unsubscribe", eventName, this.$data.subscribedEvents[eventName]);
+
+      this.$data.subscribedEvents[eventName] = callback;
+      this.$emit("network-subscribe", eventName, callback);
+    },
+    fireEvent: function(eventName: string, data: object) {
+      this.$emit("network-event", eventName, data);
+    },
+    setRoomEvent: function(eventName: string, callback: (data: object) => void) {
+      this.$data.roomEvents[eventName] = callback;
+      this.updateRoomEvents();
+    },
+    fireRoomEvent: function(eventName: string, data: object) {
+      this.$emit("network-event", `room/${this.$data.roomName}/${eventName}`, data);
+    },
+    updateRoomEvents: function() {
+      for (const [key, value] of Object.entries(this.$data.subscribedEvents) as [string, () => void][]) {
+        if (key.startsWith("room/")) {
+          this.$emit("network-unsubscribe", key, value);
+          delete this.$data.subscribedEvents[key];
+        }
+      }
+
+      if (this.$data.roomName === null)
+        return;
+
+      for (const [key, value] of Object.entries(this.$data.roomEvents) as [string, () => void][]) {
+        this.setEvent(`room/${this.$data.roomName}/${key}`, value);
+      }
+    },
+    setRoom: function(roomName: string) {
+      this.$data.roomName = roomName;
+      this.updateRoomEvents();
+    },
+
     /* User interface */
     shareVideo: function() {
-      
       navigator.mediaDevices.getDisplayMedia({ cursor: 'motion' }).then(
         stream => {
           this.$data.activeStream = stream;
@@ -249,7 +316,7 @@ declare global {
           this.$data.p2pConnections = {};
 
           // Request that people in the room connect to us via RTC
-          this.$emit("network-event", "player/start-stream", {});
+          this.fireRoomEvent("player/start-stream", {});
         }).catch(
         error => {
           alert( 'error while accessing usermedia ' + error.toString() );
@@ -260,10 +327,10 @@ declare global {
       console.log(stream);
 
       const video: HTMLVideoElement = this.$refs.screenshareVideo;
-      
+
       video.srcObject = stream;
       video.play();
-      
+
       const canvas: HTMLCanvasElement = this.$refs.uiCanvas;
       const ctx: CanvasRenderingContext2D = canvas.getContext(
         "2d"
@@ -308,7 +375,7 @@ declare global {
       emoteHUD.setAttribute('material', `src: #emote-image-${name}`);
       emoteHUD.setAttribute('visible', 'true');
 
-      this.$emit("network-event", "player/emote", {
+      this.fireRoomEvent("player/emote", {
         emoteName: name
       });
 
@@ -321,18 +388,18 @@ declare global {
         this.$data.emoteTimeout = null;
       }, 2000);
     },
-    
+
     /* Chat */
     sendChat: function() {
       const entry: HTMLInputElement = this.$refs.chatEntry;
 
-      this.$emit("network-event", "player/send-chat-message", {
+      this.fireRoomEvent("player/send-chat-message", {
         message: entry.value
       });
 
       entry.value = "";
       entry.blur();  // defocus
-      
+
       const scene: AFrame.Scene = this.$refs.playerRig.sceneEl;
       scene.requestPointerLock();
     },
@@ -357,7 +424,7 @@ declare global {
       const remoteUserStore: AFrame.Entity = this.$refs.remoteUserStore;
 
       const ourUserID: string = this.$parent.$data.userID;
-      
+
       if (userID === ourUserID) return undefined;
 
       const remoteUser: RemoteUser = this.$data.playerObjects[userID] ?? new RemoteUser(remoteUserStore, userID);
@@ -372,7 +439,7 @@ declare global {
         p2pConnection.on('signal', signal => {
           console.log(`Recieved ${signal} from ${userID}`);
           console.log(signal);
-          this.$emit("network-event", "player/stream-signal", {
+          this.fireRoomEvent("player/stream-signal", {
             peer: userID,
             signal: signal
           });
@@ -424,7 +491,7 @@ declare global {
       });
 
       console.log(`${remoteUser.userID} started stream, requesting a token`);
-      this.$emit("network-event", "player/stream-token-request", { streamer: remoteUser.userID });
+      this.fireRoomEvent("player/stream-token-request", { streamer: remoteUser.userID });
     },
     streamTokenRequest: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
@@ -462,16 +529,16 @@ declare global {
     // When component mounted
 
     // Player stuff
-    this.$emit("network-subscribe", "player/transform", this.updatePlayerTransform);
-    this.$emit("network-subscribe", "player/emote", this.receiveEmote);
+    this.setRoomEvent("player/transform", this.updatePlayerTransform);
+    this.setRoomEvent("player/emote", this.receiveEmote);
     // Chat
-    this.$emit("network-subscribe", "player/send-chat-message", this.receiveChat);
+    this.setRoomEvent("player/send-chat-message", this.receiveChat);
     // WebRTC stream handshake
-    this.$emit("network-subscribe", "player/start-stream", this.playerStartedStream);
-    this.$emit("network-subscribe", "player/stream-token-request", this.streamTokenRequest);
-    this.$emit("network-subscribe", "player/stream-signal", this.streamSignal);
+    this.setRoomEvent("player/start-stream", this.playerStartedStream);
+    this.setRoomEvent("player/stream-token-request", this.streamTokenRequest);
+    this.setRoomEvent("player/stream-signal", this.streamSignal);
 
-    setInterval(() => {
+    this.setInterval(() => {
       const playerRig: AFrame.Entity = this.$refs.playerRig;
       const playerCamera: AFrame.Entity = this.$refs.playerCamera;
 
@@ -481,13 +548,13 @@ declare global {
 
       playerCamera.object3D.matrixWorld.decompose(playerPosition, playerQuaternion, playerScale);
 
-      this.$emit("network-event", "player/transform", {
+      this.fireRoomEvent("player/transform", {
         position: playerPosition,
         rotation: playerQuaternion
       });
     }, 100);
 
-    AFrame.registerComponent("core-bootstrapper", {
+    registerComponentSafe("core-bootstrapper", {
       init: () => {
         // And AFrame has loaded
         const canvas: HTMLCanvasElement = this.$refs.uiCanvas;
@@ -499,8 +566,8 @@ declare global {
         ctx.rect(Math.random() * 1180, Math.random() * 620, 100, 100);
         ctx.fillStyle = ["red", "green", "blue", "yellow"][Math.floor(Math.random() * 4)];
         ctx.fill();
-        
-        setInterval(() => {
+
+        this.setInterval(() => {
           const board: AFrame.Entity = this.$refs.screenshareBoard;
           // Wait until we're actually loaded
           if (board.getObject3D === undefined) return;
@@ -541,7 +608,7 @@ declare global {
       }
     });
 
-    AFrame.registerComponent("hide-on-enter-vr-click", {
+    registerComponentSafe("hide-on-enter-vr-click", {
       init: function() {
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element.sceneEl as HTMLElement;
@@ -551,7 +618,7 @@ declare global {
       }
     });
 
-    AFrame.registerComponent("show-on-enter-vr-click", {
+    registerComponentSafe("show-on-enter-vr-click", {
       init: function() {
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element.sceneEl as HTMLElement;
@@ -561,7 +628,7 @@ declare global {
       }
     });
 
-    AFrame.registerComponent("show-menu", {
+    registerComponentSafe("show-menu", {
       init: function() {
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element as HTMLElement;
@@ -593,7 +660,7 @@ declare global {
 
     const sendEmote = this.sendEmote;
 
-    AFrame.registerComponent("pick-emote", {
+    registerComponentSafe("pick-emote", {
       schema: {
         emote: {type: 'string', default: "happy"}
       },
@@ -611,29 +678,32 @@ declare global {
 
     const shareVideo = this.shareVideo;
 
-    AFrame.registerComponent("share-screen",{
+    registerComponentSafe("share-screen",{
+      init: function(){
 
-    init: function(){
-      
-      const Element: AFrame.Entity = this.el;
-      const sceneEl = Element.sceneEl as HTMLElement;
+        const Element: AFrame.Entity = this.el;
+        const sceneEl = Element.sceneEl as HTMLElement;
 
-      Element.addEventListener("click", function(evt)
-      {shareVideo()})
+        Element.addEventListener("click", function(evt) { shareVideo() });
       }
     })
   },
 
   unmounted: function() {
-    // Player stuff
-    this.$emit("network-unsubscribe", "player/transform", this.updatePlayerTransform);
-    this.$emit("network-unsubscribe", "player/emote", this.receiveEmote);
-    // Chat
-    this.$emit("network-unsubscribe", "player/send-chat-message", this.receiveChat);
-    // WebRTC stream handshake
-    this.$emit("network-unsubscribe", "player/start-stream", this.playerStartedStream);
-    this.$emit("network-unsubscribe", "player/stream-token-request", this.streamTokenRequest);
-    this.$emit("network-unsubscribe", "player/stream-signal", this.streamSignal);
+    for (const [key, value] of Object.entries(this.$data.subscribedEvents) as [string, () => void][]) {
+      this.$emit("network-unsubscribe", key, value);
+    }
+    this.$data.subscribedEvents = {};
+
+    for (const value of Object.values(this.$data.timeoutEvents) as NodeJS.Timeout[]) {
+      clearTimeout(value);
+    }
+    this.$data.timeoutEvents = [];
+
+    for (const value of Object.values(this.$data.intervalEvents) as NodeJS.Timeout[]) {
+      clearInterval(value);
+    }
+    this.$data.intervalEvents = [];
   }
 })
 
@@ -714,7 +784,7 @@ material-button, material-button-svg {
   left: 1em;
   bottom: 1em;
   font-size: 1.25em;
-  
+
   z-index: 2;
   text-align: left;
 
@@ -723,7 +793,7 @@ material-button, material-button-svg {
     width: auto;
     color: white;
     text-shadow:
-    -1.5px -1.5px 0 #000,  
+    -1.5px -1.5px 0 #000,
      1.5px -1.5px 0 #000,
     -1.5px  1.5px 0 #000,
      1.5px  1.5px 0 #000;
