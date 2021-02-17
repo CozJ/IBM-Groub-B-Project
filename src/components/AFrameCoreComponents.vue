@@ -350,6 +350,12 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
         if (!data.respond)
           return;
+
+        // If we're streaming allow the new user to join the stream
+        this.setTimeout(() => {          
+          if (this.$data.activeStream)
+            this.fireRoomEvent("player/start-stream", {});
+        }, 100);
       }
 
       console.log("IDENTIFY (send)");
@@ -545,6 +551,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
         value.destroy();
       }
       this.$data.p2pConnections = {};
+      this.$data.activeStream = null;
 
       const p2pConnection: SimplePeer.Instance = this.getPeerConnection(remoteUser.userID, {
         initiator: false
