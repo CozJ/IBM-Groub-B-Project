@@ -88,12 +88,10 @@
     movement-controls="constrainToNavMesh: true"
     position="0 0 0"
   >
-    <!--super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"-->
     <a-entity
       ref="playerCamera"
       camera
       capture-mouse
-      raycaster
       position="0 1.8 0"
       look-controls="pointerLockEnabled: true"
       body="type: static; shape: sphere; sphereRadius: 0.001"
@@ -105,6 +103,7 @@
         scale="0.1 0.1 0.1"
         geometry="primitive: ring; radiusOuter: 0.020; radiusInner: 0.013;"
         material="color: #ADD8E6; shader: flat"
+        raycaster="objects: [data-raycastable]"
         cursor="maxDistance: 5;"
       >
       </a-entity>
@@ -147,12 +146,7 @@
       ></a-image>-
     </a-entity>
     <!-- Hands -->
-    <!--<a-entity
-      sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity> might be unnessecary-->
 
-    <!--<a-entity
-      sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity> might be unnessecary-->
-      <a-entity laser-controls="hand: right" raycaster="showLine: true; far: 100" line="color: orange; opacity: 0.5" ></a-entity>
   </a-entity>
 
   <!-- Remote user store -->
@@ -189,7 +183,7 @@
   <div ref="joinScreen" id="join-screen">
     Enter a room code and a name to start chatting.
     <b>Room code</b>
-    <input ref="roomCode" type="text">
+    <input ref="roomCode" type="text" value="default">
     <b>Name</b>
     <input ref="nameEntry" type="text">
     <button @click="joinSession($refs.roomCode.value, $refs.nameEntry.value)">Join room</button>
@@ -314,6 +308,10 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       this.$data.roomName = roomName;
       this.updateRoomEvents();
       this.fireRoomEvent("player/join", {name: this.$data.playerName});
+      
+      this.setTimeout(() => {
+        this.networkIdentify();
+      }, 100);
     },
     joinSession: function(roomName: string, playerName: string) {
       if (roomName.trim().length === 0) {
@@ -335,6 +333,31 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
     userJoined: function(data: {userID: string, name: string}) {
       this.addChatLine(`* ${data.name} has joined room "${this.$data.roomName}"`);
+    },
+    networkIdentify: function(data: {userID: string, name: string, respond: boolean} | undefined) {
+      // This operates as a send/recv dual purpose function
+      console.log("TRIGGER IDENTIFY");
+      console.log(data);
+
+      if (typeof data !== "undefined") {
+        const remoteUser: RemoteUser = this.getRemoteUser(data);
+
+        if (typeof remoteUser === "undefined") return;
+
+        console.log("IDENTIFY (recv)");
+
+        remoteUser.setName(data.name);
+
+        if (!data.respond)
+          return;
+      }
+
+      console.log("IDENTIFY (send)");
+
+      this.fireRoomEvent("player/identify", {
+        respond: typeof data === "undefined",  // Ask for response when initiating
+        name: this.$data.playerName
+      });
     },
 
     /* User interface */
@@ -572,6 +595,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     this.setRoomEvent("player/emote", this.receiveEmote);
     // Connections
     this.setRoomEvent("player/join", this.userJoined);
+    this.setRoomEvent("player/identify", this.networkIdentify);
     // Chat
     this.setRoomEvent("player/send-chat-message", this.receiveChat);
     // WebRTC stream handshake

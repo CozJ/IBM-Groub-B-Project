@@ -21,18 +21,21 @@ interface NetworkTransform {
 
 export default class RemoteUser {
   userID: string;
+  name: string;
   element: AFrame.Entity = document.createElement("a-entity");
   emote: AFrame.Entity = document.createElement("a-image");
+  nameTag: AFrame.Entity = document.createElement("a-text");
   emoteTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 
   constructor(parentElement: HTMLElement, userID: string) {
     // Data
     this.userID = userID;
+    this.name = "";
 
     // Emote
     this.emote.setAttribute("width", "724");
     this.emote.setAttribute("height", "515");
-    this.emote.setAttribute("position", "0.016 0.4 0");
+    this.emote.setAttribute("position", "0.016 0.5 0");
     this.emote.setAttribute("rotation", "0 180 0");
     this.emote.setAttribute("scale", "0.001 0.001 0.001");
     this.emote.setAttribute("geometry", "primitive: plane;");
@@ -40,6 +43,16 @@ export default class RemoteUser {
     this.emote.setAttribute("transparent", "true");
     this.emote.setAttribute("visible", "false");
     this.element.appendChild(this.emote);
+
+    // Nametag
+    this.nameTag.setAttribute("position", "0 0.3 -0.15");
+    this.nameTag.setAttribute("rotation", "0 180 0");
+    this.nameTag.setAttribute("color", "lightgreen");
+    this.nameTag.setAttribute("align", "center");
+    this.nameTag.setAttribute("baseline", "center");
+    this.nameTag.setAttribute("width", "2");
+    this.nameTag.setAttribute("value", "Hello");
+    this.element.appendChild(this.nameTag);
     
     // Main append
     this.element.setAttribute("gltf-model", "#asset-remote-user");
@@ -68,5 +81,10 @@ export default class RemoteUser {
       this.emote.setAttribute("visible", "false");
       this.emoteTimeout = undefined;
     }, 2000);
+  }
+
+  setName(name: string) {
+    this.name = name;
+    this.nameTag.setAttribute("value", this.name);
   }
 }
