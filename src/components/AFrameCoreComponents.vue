@@ -339,10 +339,10 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       console.log("TRIGGER IDENTIFY");
       console.log(data);
 
-      if (typeof data !== "undefined") {
+      if (data !== undefined) {
         const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-        if (typeof remoteUser === "undefined") return;
+        if (remoteUser === undefined) return;
 
         console.log("IDENTIFY (recv)");
 
@@ -361,7 +361,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       console.log("IDENTIFY (send)");
 
       this.fireRoomEvent("player/identify", {
-        respond: typeof data === "undefined",  // Ask for response when initiating
+        respond: data === undefined,  // Ask for response when initiating
         name: this.$data.playerName
       });
     },
@@ -523,7 +523,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     updatePlayerTransform: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (remoteUser === undefined)
         return;
 
       remoteUser.setNetworkTransform(data);
@@ -531,7 +531,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     receiveEmote: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (remoteUser === undefined)
         return;
 
       remoteUser.setEmote(data.emoteName);
@@ -539,7 +539,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     playerStartedStream: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined") {
+      if (remoteUser === undefined) {
         this.addChatLine(`* ${this.$data.playerName} has started a screen share`);
         return;
       }
@@ -569,7 +569,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     streamTokenRequest: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (remoteUser === undefined)
         return;
 
       const ourUserID: string = this.$parent.$data.userID;
@@ -584,7 +584,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     streamSignal: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (remoteUser === undefined)
         return;
 
       const ourUserID: string = this.$parent.$data.userID;

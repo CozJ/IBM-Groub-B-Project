@@ -74,7 +74,7 @@ export default class RemoteUser {
     this.emote.setAttribute('material', `src: #emote-image-${name}`);
     this.emote.setAttribute('visible', 'true');
 
-    if (typeof this.emoteTimeout !== "undefined")
+    if (this.emoteTimeout !== undefined)
       clearTimeout(this.emoteTimeout);
 
     this.emoteTimeout = setTimeout(() => {
