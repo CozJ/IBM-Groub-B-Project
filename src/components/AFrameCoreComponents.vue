@@ -71,9 +71,9 @@
   <video class="canvasReader" ref="screenshareVideo" autoplay muted></video>
 
   <a-box
-    id="vrMenu"
-    show-menu
-    clickable
+    id="testBox"
+    test-raycast-thing
+    data-raycastable
     color="green"
     position="-5 1 -4"
     scale="1 1 1"
@@ -103,8 +103,8 @@
         scale="0.1 0.1 0.1"
         geometry="primitive: ring; radiusOuter: 0.020; radiusInner: 0.013;"
         material="color: #ADD8E6; shader: flat"
-        raycaster="objects: [data-raycastable]"
-        cursor="maxDistance: 5;"
+        raycaster="far: 20; showLine: true; objects: [data-raycastable];"
+        cursor
       >
       </a-entity>
       <a-entity
@@ -116,8 +116,8 @@
       >
         <a-plane
           id="vrMenu"
-          show-menu
           share-screen
+          data-raycastable
           transparent="true"
           src="#vrShareScreen"
           :position="`${0 - (emotes.length / 2)} 0 0`"
@@ -126,6 +126,7 @@
           v-for="(name, index) in emotes"
           :key="'emote-button-vr-' + name"
           transparent="true"
+          data-raycastable
           :src="'#emote-icon-' + name"
           :id="'button'"
           :position="`${index + 1 - (emotes.length / 2)} 0 0`"
@@ -146,7 +147,7 @@
       ></a-image>-
     </a-entity>
     <!-- Hands -->
-
+    <a-entity laser-controls="hand: right" raycaster="showLine: true; far: 100; objects: [data-raycastable]" line="color: orange; opacity: 0.5" ></a-entity>
   </a-entity>
 
   <!-- Remote user store -->
@@ -704,33 +705,16 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       }
     });
 
-    registerComponentSafe("show-menu", {
+    registerComponentSafe("test-raycast-thing", {
       init: function() {
-        const Element: AFrame.Entity = this.el;
-        const sceneEl = Element as HTMLElement;
-        const scene = sceneEl.querySelectorAll('Button')
-        let active = false;
+        const element: AFrame.Entity = this.el;
 
-        Element.addEventListener("click", function(){
-          if (active == false)
-          {
-              active = true
-              for (let i = 0; i < scene.length; i++)
-              {
-                scene[i].setAttribute("visible", "false");
-                console.log(scene[i]);
-              }
-          }
-          else if(active == true)
-          {
-              active = false
-              for (let i = 0; i < scene.length; i++)
-              {
-                scene[i].setAttribute("visible", "true");
-                console.log(scene[i]);
-              }
-          }
+        element.addEventListener("mouseenter", function(){
+          element.setAttribute("color", "red")
         })
+        element.addEventListener("mouseleave", function(){
+          element.setAttribute("color", "blue")
+        });
       }
     });
 
