@@ -311,7 +311,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       
       this.setTimeout(() => {
         this.networkIdentify();
-      }, 100);
+      }, 500);
     },
     joinSession: function(roomName: string, playerName: string) {
       if (roomName.trim().length === 0) {
