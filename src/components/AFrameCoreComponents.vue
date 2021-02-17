@@ -533,8 +533,12 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     playerStartedStream: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (typeof remoteUser === "undefined") {
+        this.addChatLine(`* ${this.$data.playerName} has started a screen share`);
         return;
+      }
+
+      this.addChatLine(`* ${remoteUser.name} has started a screen share`);
 
       // Abandon existing connections
       for (const value of Object.values(this.$data.p2pConnections) as Array<SimplePeer.Instance>) {
