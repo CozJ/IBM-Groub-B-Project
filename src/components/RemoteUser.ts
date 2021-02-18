@@ -101,6 +101,7 @@ export default class RemoteUser {
       this.emote.setAttribute("visible", "false");
       this.emoteTimeout = undefined;
     }, 2000);
+    this.lastUpdate = new Date();
   }
 
   setName(name: string) {
