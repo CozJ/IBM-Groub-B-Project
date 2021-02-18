@@ -354,6 +354,16 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
         name: this.$data.playerName
       });
     },
+    userCleanup: function() {
+      for (const remoteUser of Object.values(this.$data.playerObjects) as RemoteUser[]) {
+        if (new Date().getTime() - remoteUser.lastUpdate.getTime() > 10000) {
+          // This user has been idle for more than 10 seconds
+          remoteUser.destroy();
+          delete this.$data.playerObjects[remoteUser.userID];
+          this.addChatLine(`* ${remoteUser.name} was idle for too long and has been destroyed.`);
+        }
+      }
+    },
 
     /* User interface */
     shareVideo: function() {
@@ -608,6 +618,8 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     this.setRoomEvent("player/start-stream", this.playerStartedStream);
     this.setRoomEvent("player/stream-token-request", this.streamTokenRequest);
     this.setRoomEvent("player/stream-signal", this.streamSignal);
+
+    this.setInterval(this.userCleanup, 100);
 
     this.setInterval(() => {
       const playerRig: AFrame.Entity = this.$refs.playerRig;
