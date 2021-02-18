@@ -38,7 +38,7 @@
   <!--lights-->
   <a-light
     type="ambient"
-    intensity="0.4"
+    intensity="1"
     color="#fff"
     position="0 0 0"
   ></a-light>
