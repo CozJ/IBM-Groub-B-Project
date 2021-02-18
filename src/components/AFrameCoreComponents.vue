@@ -50,7 +50,7 @@
     test-raycast-thing
     data-raycastable
     color="green"
-    position="-5 1 -4"
+    position="3.5 1 -0.4"
     scale="1 1 1"
     rotation="-20 0 0"
   >
