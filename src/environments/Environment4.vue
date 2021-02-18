@@ -19,14 +19,10 @@
  <a-entity
     body="type: static; shape: box"
     gltf-model="#room-obj"
-    position="25 -1.8 51"
+    position="0 0 0"
     scale="1 1 1"
+    whiteboard-canvas
   ></a-entity>
-  
-   <!--
-         cube-env-map="path: /LythwoodSkybox/; extension: jpg; reflectivity: 0.4;"
-
--->
 
   <!--lights-->
   <a-light

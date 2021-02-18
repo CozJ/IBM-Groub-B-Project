@@ -221,6 +221,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
         "unhappy",
         "angry",
         "unamused",
+        "wave",
       ],
       emoteTimeout: null,
 
@@ -616,29 +617,6 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     registerComponentSafe("core-bootstrapper", {
       init: () => {
         // And AFrame has loaded
-        const canvas: HTMLCanvasElement = this.$refs.uiCanvas;
-        const ctx: CanvasRenderingContext2D = canvas.getContext(
-          "2d"
-        ) as CanvasRenderingContext2D;
-
-        ctx.beginPath();
-        ctx.rect(Math.random() * 1180, Math.random() * 620, 100, 100);
-        ctx.fillStyle = ["red", "green", "blue", "yellow"][Math.floor(Math.random() * 4)];
-        ctx.fill();
-
-        this.setInterval(() => {
-          const board: AFrame.Entity = this.$refs.screenshareBoard;
-          // Wait until we're actually loaded
-          if (board.getObject3D === undefined) return;
-
-          const boardGroup: THREE.Mesh = board.getObject3D('mesh') as THREE.Mesh;
-          if (boardGroup === undefined) return;
-
-          const boardMesh: THREE.Mesh = boardGroup.children[0] as THREE.Mesh;
-          const screenMaterial: THREE.MeshPhongMaterial = (boardMesh.material as THREE.MeshPhongMaterial[])[0];
-          screenMaterial.needsUpdate = true;
-          screenMaterial.map = new THREE.CanvasTexture(canvas);
-        }, 100);
 
         // Key handler
         document.addEventListener('keypress', (event: KeyboardEvent) => {
@@ -664,6 +642,62 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
             }
           }
         });
+      }
+    });
+
+    const canvas: HTMLCanvasElement = this.$refs.uiCanvas;
+    const ctx: CanvasRenderingContext2D = canvas.getContext(
+      "2d"
+    ) as CanvasRenderingContext2D;
+
+    ctx.beginPath();
+    ctx.rect(Math.random() * 1180, Math.random() * 620, 100, 100);
+    ctx.fillStyle = ["red", "green", "blue", "yellow"][Math.floor(Math.random() * 4)];
+    ctx.fill();
+
+    registerComponentSafe("whiteboard-canvas", {
+      init: function() {
+        const board: AFrame.Entity = this.el;
+
+        board.addEventListener('model-loaded', () => {
+          const materialNeedsUpdate: THREE.MeshPhongMaterial[] = [];
+
+          const boardGroup: THREE.Mesh = board.getObject3D('mesh') as THREE.Mesh;
+
+          boardGroup.traverse((childObject) => {
+            const childMesh: THREE.Mesh = childObject as THREE.Mesh;
+            if (childMesh.material === undefined) return;
+
+            const childMaterial: THREE.MeshPhongMaterial | THREE.MeshPhongMaterial[] = childMesh.material as THREE.MeshPhongMaterial | THREE.MeshPhongMaterial[];
+
+            console.log("typeof material", childMesh.material, typeof childMesh.material);
+
+            if (Array.isArray(childMaterial)) {
+              for (const material of childMesh.material as THREE.MeshPhongMaterial[]) {
+                if (material.name == "WhiteboardCanvas") {
+                  materialNeedsUpdate.push(material);
+                }
+              }
+            } else {
+              if (childMaterial.name == "WhiteboardCanvas") {
+                materialNeedsUpdate.push(childMaterial);
+              }
+            }
+          });
+
+          this.data.interval = setInterval(() => {
+            console.log(materialNeedsUpdate);
+            for (const material of materialNeedsUpdate) {
+              material.needsUpdate = true;
+              material.map = material.emissiveMap = new THREE.CanvasTexture(canvas);
+              material.emissiveIntensity = 1;
+              material.emissive = new THREE.Color(0xFFFFFF);
+            }
+          }, 100);
+        });
+      },
+      remove: function() {
+        clearInterval(this.data.interval);
       }
     });
 
@@ -811,7 +845,7 @@ material-button, material-button-svg {
     transition: max-height ease-in-out 500ms;
 
     &.open {
-      max-height: (5 * 3.6em);
+      max-height: (6 * 3.6em);
     }
   }
 }

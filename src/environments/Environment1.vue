@@ -26,46 +26,15 @@
   <a-entity
     body="type: static; shape: box"
     gltf-model="#room-obj"
+    cube-env-map="path: /LythwoodSkybox/; extension: jpg; reflectivity: 0.4;"
     position="0 0 5"
     scale="1 1 1"
+    whiteboard-canvas
   ></a-entity>
   
   <a-entity cubemap="folder: /Brudslojan/"></a-entity>
 
   <!--Objects-->
-<!--
-   <a-entity
-    id="screenshare-board"
-    ref="screenshareBoard"
-    hoverable
-    grabbable
-    draggable
-    droppable
-    body="type: static; shape: box"
-    obj-model="obj: #asset-objects-screen-obj; mtl: #asset-objects-screen-mtl;"
-    position="-0.212 7.429 -17.709"
-    rotation="0 180 0"
-    scale="4 4 2"
-    
-  ></a-entity>
--->
-
-  <!--
-  <a-box
-    id="test-target-one"
-    body="shape: box"
-    static-body
-    hoverable
-    grabbable
-    draggable
-    droppable
-    color="red"
-    position="0 5 -3"
-    rotation="0 45 45"
-    scale="1 1 1"
-  ></a-box>
-  -->
-  
   <a-entity
     gltf-model="#asset-navmesh"
     nav-mesh
