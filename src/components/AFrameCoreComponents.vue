@@ -96,6 +96,7 @@
         scale="0.05 0.05 0.05"
         rotation="-20 0 0"
       >
+        <a-text position="-5 -10 0.6" width="10" ref="vrChatBackLog" value=""></a-text>
         <a-plane
           id="vrMenu"
           share-screen
@@ -177,7 +178,8 @@
 import { Options, Vue } from "vue-class-component";
 import RemoteUser from "@/components/RemoteUser";
 
-import AFrame from "aframe";
+import AFrame, { registerComponent } from "aframe";
+//need in import the shader but not sure how
 import * as THREE from "three";
 import SimplePeer from "simple-peer";
 
@@ -457,9 +459,15 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     },
     addChatLine: function(line: string) {
       const chat: HTMLInputElement = this.$refs.chatBacklog;
+      const VrChat: AFrame.Entity = this.$refs.vrChatBackLog; 
       const scrolledDown: boolean = chat.scrollHeight - chat.clientHeight <= chat.scrollTop + 1;
 
       chat.innerText += `\n${line}`;
+      if (VrChat.getAttribute("value").length > 100)
+      {
+        VrChat.setAttribute("value", "\n")
+      }
+      VrChat.setAttribute("value", VrChat.getAttribute("value") + `\n${line}`)
 
       if (scrolledDown)
         chat.scrollTop = chat.scrollHeight - chat.clientHeight;
@@ -773,6 +781,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
         Element.addEventListener("click", function(evt) { shareVideo() });
       }
     })
+  
   },
 
   unmounted: function() {
