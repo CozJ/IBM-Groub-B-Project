@@ -198,13 +198,9 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
   AFrame.registerComponent(name, component);
 }
 
-
-
-    const userJoin = new Audio(require('../assets/sounds/userJoin.mp3'));
-    const userLeave = new Audio(require('../assets/sounds/userLeave.mp3'));
-    const textMessage = new Audio(require('../assets/sounds/textMessage.mp3'));
-
-
+const userJoin = new Audio(require('../assets/sounds/userJoin.mp3'));
+const userLeave = new Audio(require('../assets/sounds/userLeave.mp3'));
+const textMessage = new Audio(require('../assets/sounds/textMessage.mp3'));
 
 @Options({
   components: {
@@ -398,9 +394,9 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
         }
       }
 
-      if (userDeleted){
+      if (userDeleted) {
         this.presenterCheck();
-         userLeave.play();
+        userLeave.play();
       }
     },
 
