@@ -34,12 +34,15 @@ export default class RemoteUser {
   timeJoined: Date= new Date();
   lastUpdate: Date = new Date();
   timeJoinedMilli: number;
+  presenter: boolean;
 
   constructor(parentElement: HTMLElement, userID: string) {
     // Data
     this.userID = userID;
     this.name = "";
     this.timeJoinedMilli=0;
+    this.timeJoined= new Date();
+    this.presenter=false;
 
     // Emote
     this.emote.setAttribute("width", "724");

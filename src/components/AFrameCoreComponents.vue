@@ -137,6 +137,9 @@
   <a-entity id="remote-user-store" ref="remoteUserStore">
   </a-entity>
 
+  <!--Function for checking who is presenter and setting them as presenter-->
+
+
   <!-- Menu stuff -->
   <div id="icon-rollout">
     <material-button class="material-icons em-3">more_horiz</material-button>
@@ -333,10 +336,12 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       
       this.presenterCheck();
       console.log(playerName +" has joined at " + this.$data.timeJoined);
-
+      this.presenterCheck();
       const joinScreen: HTMLDivElement = this.$refs.joinScreen;
       joinScreen.style.visibility = 'hidden';
+
     },
+
 
     userJoined: function(data: {userID: string, name: string}) {
       this.addChatLine(`* ${data.name} has joined room "${this.$data.roomName}"`);
@@ -840,7 +845,9 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       clearInterval(value);
     }
     this.$data.intervalEvents = [];
-  }
+  },
+
+  
 })
 
 export default class AFrameCoreComponents extends Vue {
