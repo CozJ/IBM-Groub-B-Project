@@ -299,6 +299,22 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
         this.networkIdentify();
       }, 500);
     },
+
+      presenterCheck: function(){
+        const remoteUserStore: AFrame.Entity = this.$refs.remoteUserStore;
+        let minRemoteUser= this.$data.playerObjects.at(0);
+        let min= minRemoteUser.timeJoinedMilli;
+
+       for (const remoteUser of Object.values(this.$data.playerObjects) as RemoteUser[]) {
+        if(min > remoteUser.timeJoined ){
+          minRemoteUser= remoteUser;
+          min = minRemoteUser.timeJoinedMilli;
+        }
+        }
+        minRemoteUser.presenter= true;
+        console.log(RemoteUser.name + " is now the presenter" );
+    },
+
     joinSession: function(roomName: string, playerName: string) {
       if (roomName.trim().length === 0) {
         alert("Please enter a valid room code.");
@@ -312,8 +328,10 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
       this.$data.playerName = playerName;
       this.setRoom(roomName);
-      this.$data.timeJoined = new Date().getTime();
+      this.$data.timeJoined = new Date();
+      this.$data.timeJoinedMilli = this.$data.timeJoined.getUTCMilliseconds();
       
+      this.presenterCheck();
       console.log(playerName +" has joined at " + this.$data.timeJoined);
 
       const joinScreen: HTMLDivElement = this.$refs.joinScreen;
