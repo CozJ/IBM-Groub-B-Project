@@ -9,7 +9,7 @@
       id="asset-navmesh"
       :src="require('../assets/room/navmesh.gltf')"
     ></a-assets-item>
-<!--
+
     <a-assets-item
       id="asset-objects-chairComfy-mtl"
       :src="require('../assets/room/objects/chairComfy.mtl')"
@@ -18,7 +18,7 @@
       id="asset-objects-chairComfy-obj"
       :src="require('../assets/room/objects/chairComfy.obj')"
     ></a-assets-item>
-    -->
+    
   </a-assets>
 
   <!-- Skybox -->

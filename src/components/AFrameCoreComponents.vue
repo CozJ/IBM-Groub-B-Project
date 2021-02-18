@@ -24,12 +24,12 @@
     >
 
     <!-- Room persistent objects -->
-    
+    <!--
     <a-assets-item
       id="asset-objects-ybot"
       :src="require('../assets/room/objects/ybot.gltf')"
     ></a-assets-item>
-
+-->
     <!-- Remote users -->
     <a-assets-item
       id="asset-remote-user"
@@ -38,7 +38,7 @@
   </a-assets>
 
  
-
+<!--
   <a-entity
     id="ybot"
     position="15 0 -5"
@@ -47,6 +47,7 @@
     animation-mixer
     :gltf-model="`${require('../assets/room/objects/ybot.gltf')}`"
   ></a-entity>
+  -->
   <!-- The above way of handling GLTF models is extremely dumb, but for whatever reason aframe refuses to load the asset by ID reference -->
 
   <video class="canvasReader" ref="screenshareVideo" autoplay muted></video>
