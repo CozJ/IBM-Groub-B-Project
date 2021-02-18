@@ -1,15 +1,21 @@
 # ibm-vr-group-b
 
-## Project setup
+## Project setup and run
 ```
-npm install
+open project in visual studio code
 ```
-
+open terminal
+```
+run npm install
+```
+run npm run serve
+```
+open localhost at port 
+```
 ### Compiles and hot-reloads for development
 ```
 npm run serve
 ```
-
 ### Compiles and minifies for production
 ```
 npm run build
