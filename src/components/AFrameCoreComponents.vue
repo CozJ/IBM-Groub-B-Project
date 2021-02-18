@@ -52,9 +52,9 @@
   <video class="canvasReader" ref="screenshareVideo" autoplay muted></video>
 
   <a-box
-    id="vrMenu"
-    show-menu
-    clickable
+    id="testBox"
+    test-raycast-thing
+    data-raycastable
     color="green"
     position="-5 1 -4"
     scale="1 1 1"
@@ -70,12 +70,10 @@
     position="0 0 0"
     rotation= "0 -120 0"
   >
-    <!--super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"-->
     <a-entity
       ref="playerCamera"
       camera
       capture-mouse
-      raycaster
       position="0 1.8 0"
       look-controls="pointerLockEnabled: true"
       body="type: static; shape: sphere; sphereRadius: 0.001"
@@ -87,7 +85,8 @@
         scale="0.1 0.1 0.1"
         geometry="primitive: ring; radiusOuter: 0.020; radiusInner: 0.013;"
         material="color: #ADD8E6; shader: flat"
-        cursor="maxDistance: 5;"
+        raycaster="far: 20; showLine: true; objects: [data-raycastable];"
+        cursor
       >
       </a-entity>
       <a-entity
@@ -99,8 +98,8 @@
       >
         <a-plane
           id="vrMenu"
-          show-menu
           share-screen
+          data-raycastable
           transparent="true"
           src="#vrShareScreen"
           :position="`${0 - (emotes.length / 2)} 0 0`"
@@ -109,6 +108,7 @@
           v-for="(name, index) in emotes"
           :key="'emote-button-vr-' + name"
           transparent="true"
+          data-raycastable
           :src="'#emote-icon-' + name"
           :id="'button'"
           :position="`${index + 1 - (emotes.length / 2)} 0 0`"
@@ -129,12 +129,7 @@
       ></a-image>-
     </a-entity>
     <!-- Hands -->
-    <!--<a-entity
-      sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity> might be unnessecary-->
-
-    <!--<a-entity
-      sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity> might be unnessecary-->
-      <a-entity laser-controls="hand: right" raycaster="showLine: true; far: 100" line="color: orange; opacity: 0.5" ></a-entity>
+    <a-entity laser-controls="hand: right" raycaster="showLine: true; far: 100; objects: [data-raycastable]" line="color: orange; opacity: 0.5" ></a-entity>
   </a-entity>
 
   <!-- Remote user store -->
@@ -171,7 +166,7 @@
   <div ref="joinScreen" id="join-screen">
     Enter a room code and a name to start chatting.
     <b>Room code</b>
-    <input ref="roomCode" type="text">
+    <input ref="roomCode" type="text" value="default">
     <b>Name</b>
     <input ref="nameEntry" type="text">
     <button @click="joinSession($refs.roomCode.value, $refs.nameEntry.value)">Join room</button>
@@ -296,6 +291,10 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       this.$data.roomName = roomName;
       this.updateRoomEvents();
       this.fireRoomEvent("player/join", {name: this.$data.playerName});
+      
+      this.setTimeout(() => {
+        this.networkIdentify();
+      }, 500);
     },
     joinSession: function(roomName: string, playerName: string) {
       if (roomName.trim().length === 0) {
@@ -317,6 +316,37 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
     userJoined: function(data: {userID: string, name: string}) {
       this.addChatLine(`* ${data.name} has joined room "${this.$data.roomName}"`);
+    },
+    networkIdentify: function(data: {userID: string, name: string, respond: boolean} | undefined) {
+      // This operates as a send/recv dual purpose function
+      console.log("TRIGGER IDENTIFY");
+      console.log(data);
+
+      if (data !== undefined) {
+        const remoteUser: RemoteUser = this.getRemoteUser(data);
+
+        if (remoteUser === undefined) return;
+
+        console.log("IDENTIFY (recv)");
+
+        remoteUser.setName(data.name);
+
+        if (!data.respond)
+          return;
+
+        // If we're streaming allow the new user to join the stream
+        this.setTimeout(() => {          
+          if (this.$data.activeStream)
+            this.fireRoomEvent("player/start-stream", {});
+        }, 100);
+      }
+
+      console.log("IDENTIFY (send)");
+
+      this.fireRoomEvent("player/identify", {
+        respond: data === undefined,  // Ask for response when initiating
+        name: this.$data.playerName
+      });
     },
 
     /* User interface */
@@ -476,7 +506,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     updatePlayerTransform: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (remoteUser === undefined)
         return;
 
       remoteUser.setNetworkTransform(data);
@@ -484,7 +514,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     receiveEmote: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (remoteUser === undefined)
         return;
 
       remoteUser.setEmote(data.emoteName);
@@ -492,14 +522,19 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     playerStartedStream: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (remoteUser === undefined) {
+        this.addChatLine(`* ${this.$data.playerName} has started a screen share`);
         return;
+      }
+
+      this.addChatLine(`* ${remoteUser.name} has started a screen share`);
 
       // Abandon existing connections
       for (const value of Object.values(this.$data.p2pConnections) as Array<SimplePeer.Instance>) {
         value.destroy();
       }
       this.$data.p2pConnections = {};
+      this.$data.activeStream = null;
 
       const p2pConnection: SimplePeer.Instance = this.getPeerConnection(remoteUser.userID, {
         initiator: false
@@ -517,7 +552,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     streamTokenRequest: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (remoteUser === undefined)
         return;
 
       const ourUserID: string = this.$parent.$data.userID;
@@ -532,7 +567,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     streamSignal: function(data: any) {
       const remoteUser: RemoteUser = this.getRemoteUser(data);
 
-      if (typeof remoteUser === "undefined")
+      if (remoteUser === undefined)
         return;
 
       const ourUserID: string = this.$parent.$data.userID;
@@ -554,6 +589,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     this.setRoomEvent("player/emote", this.receiveEmote);
     // Connections
     this.setRoomEvent("player/join", this.userJoined);
+    this.setRoomEvent("player/identify", this.networkIdentify);
     // Chat
     this.setRoomEvent("player/send-chat-message", this.receiveChat);
     // WebRTC stream handshake
@@ -651,33 +687,16 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       }
     });
 
-    registerComponentSafe("show-menu", {
+    registerComponentSafe("test-raycast-thing", {
       init: function() {
-        const Element: AFrame.Entity = this.el;
-        const sceneEl = Element as HTMLElement;
-        const scene = sceneEl.querySelectorAll('Button')
-        let active = false;
+        const element: AFrame.Entity = this.el;
 
-        Element.addEventListener("click", function(){
-          if (active == false)
-          {
-              active = true
-              for (let i = 0; i < scene.length; i++)
-              {
-                scene[i].setAttribute("visible", "false");
-                console.log(scene[i]);
-              }
-          }
-          else if(active == true)
-          {
-              active = false
-              for (let i = 0; i < scene.length; i++)
-              {
-                scene[i].setAttribute("visible", "true");
-                console.log(scene[i]);
-              }
-          }
+        element.addEventListener("mouseenter", function(){
+          element.setAttribute("color", "red")
         })
+        element.addEventListener("mouseleave", function(){
+          element.setAttribute("color", "blue")
+        });
       }
     });
 
