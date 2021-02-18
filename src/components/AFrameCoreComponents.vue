@@ -310,6 +310,9 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
       this.$data.playerName = playerName;
       this.setRoom(roomName);
+      this.$data.timeJoined = new Date().getTime();
+      
+      console.log(playerName +" has joined at " + this.$data.timeJoined);
 
       const joinScreen: HTMLDivElement = this.$refs.joinScreen;
       joinScreen.style.visibility = 'hidden';
