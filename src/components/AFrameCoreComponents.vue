@@ -222,6 +222,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
         "unhappy",
         "angry",
         "unamused",
+        "wave",
       ],
       emoteTimeout: null,
 
@@ -812,7 +813,7 @@ material-button, material-button-svg {
     transition: max-height ease-in-out 500ms;
 
     &.open {
-      max-height: (5 * 3.6em);
+      max-height: (6 * 3.6em);
     }
   }
 }
