@@ -31,7 +31,8 @@ export default class RemoteUser {
   emote: AFrame.Entity = document.createElement("a-image");
   nameTag: AFrame.Entity = document.createElement("a-text");
   emoteTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
-  timeJoined:  number;
+  timeJoined: number;
+  lastUpdate: Date = new Date();
 
   constructor(parentElement: HTMLElement, userID: string) {
     // Data
@@ -85,6 +86,8 @@ export default class RemoteUser {
     } else {
       this.element.setAttribute("position", `${packet.position.x} ${packet.position.y} ${packet.position.z}`);
     }
+
+    this.lastUpdate = new Date();
   }
 
   setEmote(name: string) {
@@ -103,5 +106,10 @@ export default class RemoteUser {
   setName(name: string) {
     this.name = name;
     this.nameTag.setAttribute("value", this.name);
+    this.lastUpdate = new Date();
+  }
+
+  destroy() {
+    this.element.remove();
   }
 }
