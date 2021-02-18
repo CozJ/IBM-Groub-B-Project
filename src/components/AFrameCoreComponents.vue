@@ -96,7 +96,7 @@
         scale="0.05 0.05 0.05"
         rotation="-20 0 0"
       >
-        <a-text position="-5 -10 0.6" width="10" ref="vrChatBackLog" value=""></a-text>
+        <a-text position="-5 -8 0.6" width="10" ref="vrChatBackLog" value=""></a-text>
         <a-plane
           id="vrMenu"
           share-screen
@@ -379,8 +379,8 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     },
     userCleanup: function() {
       for (const remoteUser of Object.values(this.$data.playerObjects) as RemoteUser[]) {
-        if (new Date().getTime() - remoteUser.lastUpdate.getTime() > 10000) {
-          // This user has been idle for more than 10 seconds
+        if (new Date().getTime() - remoteUser.lastUpdate.getTime() > 30000) {
+          // This user has been idle for more than 30 seconds
           remoteUser.destroy();
           delete this.$data.playerObjects[remoteUser.userID];
           this.addChatLine(`* ${remoteUser.name} was idle for too long and has been destroyed.`);

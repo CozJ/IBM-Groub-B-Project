@@ -5,6 +5,10 @@
       id="room-obj"
       :src="require('../assets/room/SpaceDomesFinished.gltf')"
     ></a-assets-item>
+    <a-assets-item
+      id="asset-navmesh"
+      :src="require('../assets/room/SpaceDomesNavmesh.gltf')"
+    ></a-assets-item>
 
   </a-assets>
 
@@ -23,11 +27,18 @@
     scale="1 1 1"
     whiteboard-canvas
   ></a-entity>
+  <a-entity
+    gltf-model="#asset-navmesh"
+    nav-mesh
+    visible="false"
+    position="0 0 0"
+    scale="1 1 1"
+  ></a-entity>
 
   <!--lights-->
   <a-light
     type="ambient"
-    intensity="0.4"
+    intensity="1"
     color="#fff"
     position="0 0 0"
   ></a-light>
