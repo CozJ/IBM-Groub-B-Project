@@ -23,32 +23,12 @@
       :src="require('../assets/emotes/icons/' + name + '.svg')"
     >
 
-    <!-- Room persistent objects -->
-    <!--
-    <a-assets-item
-      id="asset-objects-ybot"
-      :src="require('../assets/room/objects/ybot.gltf')"
-    ></a-assets-item>
--->
     <!-- Remote users -->
     <a-assets-item
       id="asset-remote-user"
       :src="require('../assets/players/remote_user.gltf')"
     ></a-assets-item>
   </a-assets>
-
- 
-<!--
-  <a-entity
-    id="ybot"
-    position="15 0 -5"
-    rotation="0 -45 0"
-    scale="1 1 1"
-    animation-mixer
-    :gltf-model="`${require('../assets/room/objects/ybot.gltf')}`"
-  ></a-entity>
-  -->
-  <!-- The above way of handling GLTF models is extremely dumb, but for whatever reason aframe refuses to load the asset by ID reference -->
 
   <video class="canvasReader" ref="screenshareVideo" autoplay muted></video>
 
@@ -146,7 +126,7 @@
     <div id="favorites-menu">
       <material-button class="material-icons em-3 orange">star</material-button>
       <material-button class="material-icons em-3" @click="toggleChat">message</material-button>
-      <material-button class="material-icons em-3" @click="shareVideo">tv</material-button>
+      <material-button class="material-icons em-3" show-on-presenter @click="shareVideo">tv</material-button>
     </div>
     <material-button class="material-icons em-3 orange" @click="helpButton"
       >help</material-button
@@ -232,7 +212,8 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
       playerObjects: {},
       activeStream: null,
-      p2pConnections: {}
+      p2pConnections: {},
+      timeJoined: new Date()
     }
   },
   emits: [
@@ -303,19 +284,27 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       }, 500);
     },
 
-      presenterCheck: function(){
-        const remoteUserStore: AFrame.Entity = this.$refs.remoteUserStore;
-        let minRemoteUser= this.$data.playerObjects.at(0);
-        let min= minRemoteUser.timeJoinedMilli;
+    presenterCheck: function(){
+      let presenter: RemoteUser | null = null;
 
-       for (const remoteUser of Object.values(this.$data.playerObjects) as RemoteUser[]) {
-        if(min > remoteUser.timeJoined ){
-          minRemoteUser= remoteUser;
-          min = minRemoteUser.timeJoinedMilli;
+      for (const remoteUser of Object.values(this.$data.playerObjects) as RemoteUser[]) {
+        if (remoteUser.timeJoinedMilli < this.$data.timeJoined.getTime()) {
+          // potential presenter
+          if (presenter == null || (remoteUser.timeJoinedMilli < presenter.timeJoinedMilli))
+            presenter = remoteUser;
         }
-        }
-        minRemoteUser.presenter= true;
-        console.log(RemoteUser.name + " is now the presenter" );
+
+        remoteUser.setPresenter(false);
+      }
+
+      if (presenter === null) {
+        document.body.classList.remove('not-presenter');
+        document.body.classList.add('presenter');
+      } else {
+        presenter.setPresenter(true);
+        document.body.classList.remove('presenter');
+        document.body.classList.add('not-presenter');
+      }
     },
 
     joinSession: function(roomName: string, playerName: string) {
@@ -330,23 +319,17 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       }
 
       this.$data.playerName = playerName;
-      this.setRoom(roomName);
       this.$data.timeJoined = new Date();
-      this.$data.timeJoinedMilli = this.$data.timeJoined.getUTCMilliseconds();
-      
-      this.presenterCheck();
-      console.log(playerName +" has joined at " + this.$data.timeJoined);
-      this.presenterCheck();
+      this.setRoom(roomName);
+
       const joinScreen: HTMLDivElement = this.$refs.joinScreen;
       joinScreen.style.visibility = 'hidden';
-
     },
-
 
     userJoined: function(data: {userID: string, name: string}) {
       this.addChatLine(`* ${data.name} has joined room "${this.$data.roomName}"`);
     },
-    networkIdentify: function(data: {userID: string, name: string, respond: boolean} | undefined) {
+    networkIdentify: function(data: {userID: string, name: string, timeJoined: number, respond: boolean} | undefined) {
       // This operates as a send/recv dual purpose function
       console.log("TRIGGER IDENTIFY");
       console.log(data);
@@ -359,6 +342,9 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
         console.log("IDENTIFY (recv)");
 
         remoteUser.setName(data.name);
+        remoteUser.timeJoinedMilli = data.timeJoined;
+
+        this.presenterCheck();
 
         if (!data.respond)
           return;
@@ -374,18 +360,25 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
       this.fireRoomEvent("player/identify", {
         respond: data === undefined,  // Ask for response when initiating
-        name: this.$data.playerName
+        name: this.$data.playerName,
+        timeJoined: this.$data.timeJoined.getTime()
       });
     },
     userCleanup: function() {
+      let userDeleted = false;
+
       for (const remoteUser of Object.values(this.$data.playerObjects) as RemoteUser[]) {
         if (new Date().getTime() - remoteUser.lastUpdate.getTime() > 30000) {
           // This user has been idle for more than 30 seconds
           remoteUser.destroy();
           delete this.$data.playerObjects[remoteUser.userID];
           this.addChatLine(`* ${remoteUser.name} was idle for too long and has been destroyed.`);
+          userDeleted = true;
         }
       }
+
+      if (userDeleted)
+        this.presenterCheck();
     },
 
     /* User interface */
@@ -642,6 +635,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     this.setRoomEvent("player/stream-token-request", this.streamTokenRequest);
     this.setRoomEvent("player/stream-signal", this.streamSignal);
 
+    this.presenterCheck();
     this.setInterval(this.userCleanup, 100);
 
     this.setInterval(() => {
@@ -734,8 +728,6 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
             const childMaterial: THREE.MeshPhongMaterial | THREE.MeshPhongMaterial[] = childMesh.material as THREE.MeshPhongMaterial | THREE.MeshPhongMaterial[];
 
-            console.log("typeof material", childMesh.material, typeof childMesh.material);
-
             if (Array.isArray(childMaterial)) {
               for (const material of childMesh.material as THREE.MeshPhongMaterial[]) {
                 if (material.name == "WhiteboardCanvas") {
@@ -750,7 +742,6 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
           });
 
           this.data.interval = setInterval(() => {
-            console.log(materialNeedsUpdate);
             for (const material of materialNeedsUpdate) {
               material.needsUpdate = true;
               material.map = material.emissiveMap = new THREE.CanvasTexture(canvas);

@@ -31,17 +31,14 @@ export default class RemoteUser {
   emote: AFrame.Entity = document.createElement("a-image");
   nameTag: AFrame.Entity = document.createElement("a-text");
   emoteTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
-  timeJoined: Date= new Date();
+  timeJoinedMilli = 0;
   lastUpdate: Date = new Date();
-  timeJoinedMilli: number;
   presenter: boolean;
 
   constructor(parentElement: HTMLElement, userID: string) {
     // Data
     this.userID = userID;
     this.name = "";
-    this.timeJoinedMilli=0;
-    this.timeJoined= new Date();
     this.presenter=false;
 
     // Emote
@@ -112,6 +109,16 @@ export default class RemoteUser {
     this.name = name;
     this.nameTag.setAttribute("value", this.name);
     this.lastUpdate = new Date();
+  }
+
+  setPresenter(presenter: boolean) {
+    if (presenter) {
+      this.nameTag.setAttribute("color", "blue");
+      this.nameTag.setAttribute("width", "3");
+    } else {
+      this.nameTag.setAttribute("color", "lightgreen");
+      this.nameTag.setAttribute("width", "2");
+    }
   }
 
   destroy() {

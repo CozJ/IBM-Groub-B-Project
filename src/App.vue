@@ -136,6 +136,14 @@ export default class App extends Vue {}
   z-index: 1;
 }
 
+body.presenter [hide-on-presenter] {
+  display: none;
+}
+
+body.not-presenter [show-on-presenter] {
+  display: none;
+}
+
 a-scene {
   width: 100%;
   height: 100%;
