@@ -29,6 +29,19 @@
       :src="require('../assets/players/remote_user.gltf')"
     ></a-assets-item>
   </a-assets>
+      
+
+<!--
+  <a-entity
+    id="ybot"
+    position="15 0 -5"
+    rotation="0 -45 0"
+    scale="1 1 1"
+    animation-mixer
+    :gltf-model="`${require('../assets/room/objects/ybot.gltf')}`"
+  ></a-entity>
+  -->
+  <!-- The above way of handling GLTF models is extremely dumb, but for whatever reason aframe refuses to load the asset by ID reference -->
 
   <video class="canvasReader" ref="screenshareVideo" autoplay muted></video>
 
@@ -186,6 +199,13 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 }
 
 
+
+    const userJoin = new Audio(require('../assets/sounds/userJoin.mp3'));
+    const userLeave = new Audio(require('../assets/sounds/userLeave.mp3'));
+    const textMessage = new Audio(require('../assets/sounds/textMessage.mp3'));
+
+
+
 @Options({
   components: {
   },
@@ -328,6 +348,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
     userJoined: function(data: {userID: string, name: string}) {
       this.addChatLine(`* ${data.name} has joined room "${this.$data.roomName}"`);
+      userJoin.play();
     },
     networkIdentify: function(data: {userID: string, name: string, timeJoined: number, respond: boolean} | undefined) {
       // This operates as a send/recv dual purpose function
@@ -377,8 +398,10 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
         }
       }
 
-      if (userDeleted)
+      if (userDeleted){
         this.presenterCheck();
+         userLeave.play();
+      }
     },
 
     /* User interface */
@@ -500,6 +523,7 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
     },
     receiveChat: function(data: {userID: string, name: string, message: string}) {
       this.addChatLine(`<${data.name}> ${data.message}`);
+      textMessage.play();
     },
     toggleChat: function() {
       const chat: HTMLInputElement = this.$refs.chatHolder;
