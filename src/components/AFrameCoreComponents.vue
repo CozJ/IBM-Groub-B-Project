@@ -602,15 +602,22 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
       const playerRig: AFrame.Entity = this.$refs.playerRig;
       const playerCamera: AFrame.Entity = this.$refs.playerCamera;
 
-      const playerPosition: THREE.Vector3 = new THREE.Vector3();
-      const playerQuaternion: THREE.Quaternion = new THREE.Quaternion();
-      const playerScale: THREE.Vector3 = new THREE.Vector3();
+      const playerRigPosition: THREE.Vector3 = new THREE.Vector3();
+      const playerRigQuaternion: THREE.Quaternion = new THREE.Quaternion();
+      const playerRigScale: THREE.Vector3 = new THREE.Vector3();
 
-      playerCamera.object3D.matrixWorld.decompose(playerPosition, playerQuaternion, playerScale);
+      playerRig.object3D.matrixWorld.decompose(playerRigPosition, playerRigQuaternion, playerRigScale);
+
+      const playerCameraPosition: THREE.Vector3 = new THREE.Vector3();
+      const playerCameraQuaternion: THREE.Quaternion = new THREE.Quaternion();
+      const playerCameraScale: THREE.Vector3 = new THREE.Vector3();
+
+      playerCamera.object3D.matrixWorld.decompose(playerCameraPosition, playerCameraQuaternion, playerCameraScale);
 
       this.fireRoomEvent("player/transform", {
-        position: playerPosition,
-        rotation: playerQuaternion
+        position: playerCameraPosition,
+        rotation: playerRigQuaternion,
+        headRotation: playerCameraQuaternion
       });
     }, 100);
 

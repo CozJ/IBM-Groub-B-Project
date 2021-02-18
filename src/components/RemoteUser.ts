@@ -16,6 +16,12 @@ interface NetworkTransform {
     _z: number,
     _w: number
   }
+  headRotation: {
+    _x: number,
+    _y: number,
+    _z: number,
+    _w: number
+  }
 }
 
 
@@ -65,6 +71,14 @@ export default class RemoteUser {
       this.element.object3D.position.set(packet.position.x, packet.position.y, packet.position.z);
       this.element.object3D.rotation.setFromQuaternion(new THREE.Quaternion(
         packet.rotation._x, packet.rotation._y, packet.rotation._z, packet.rotation._w
+      ));
+
+      const head: THREE.Object3D = this.element.object3D.getObjectByName("Head") as THREE.Object3D;
+
+      if (head === undefined) return;
+
+      head.rotation.setFromQuaternion(new THREE.Quaternion(
+        packet.headRotation._x, packet.headRotation._y, packet.headRotation._z, packet.headRotation._w
       ));
     } else {
       this.element.setAttribute("position", `${packet.position.x} ${packet.position.y} ${packet.position.z}`);
