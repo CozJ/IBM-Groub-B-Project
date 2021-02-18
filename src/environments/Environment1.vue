@@ -9,7 +9,7 @@
       id="asset-navmesh"
       :src="require('../assets/room/navmesh.gltf')"
     ></a-assets-item>
-
+<!--
     <a-assets-item
       id="asset-objects-chairComfy-mtl"
       :src="require('../assets/room/objects/chairComfy.mtl')"
@@ -18,12 +18,39 @@
       id="asset-objects-chairComfy-obj"
       :src="require('../assets/room/objects/chairComfy.obj')"
     ></a-assets-item>
+    -->
   </a-assets>
 
   <!-- Skybox -->
-  <a-entity cubemap="folder: /GenericSkybox/"></a-entity>
+
+  <a-entity
+    body="type: static; shape: box"
+    gltf-model="#room-obj"
+    position="0 0 5"
+    scale="1 1 1"
+  ></a-entity>
+  
+  <a-entity cubemap="folder: /Brudslojan/"></a-entity>
 
   <!--Objects-->
+<!--
+   <a-entity
+    id="screenshare-board"
+    ref="screenshareBoard"
+    hoverable
+    grabbable
+    draggable
+    droppable
+    body="type: static; shape: box"
+    obj-model="obj: #asset-objects-screen-obj; mtl: #asset-objects-screen-mtl;"
+    position="-0.212 7.429 -17.709"
+    rotation="0 180 0"
+    scale="4 4 2"
+    
+  ></a-entity>
+-->
+
+  <!--
   <a-box
     id="test-target-one"
     body="shape: box"
@@ -37,14 +64,8 @@
     rotation="0 45 45"
     scale="1 1 1"
   ></a-box>
-
-  <a-entity
-    body="type: static; shape: box"
-    gltf-model="#room-obj"
-    cube-env-map="path: /LythwoodSkybox/; extension: jpg; reflectivity: 0.4;"
-    position="0 0 5"
-    scale="1 1 1"
-  ></a-entity>
+  -->
+  
   <a-entity
     gltf-model="#asset-navmesh"
     nav-mesh

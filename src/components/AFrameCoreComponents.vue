@@ -24,14 +24,7 @@
     >
 
     <!-- Room persistent objects -->
-    <a-assets-item
-      id="asset-objects-screen-mtl"
-      :src="require('../assets/room/objects/screen.mtl')"
-    ></a-assets-item>
-    <a-assets-item
-      id="asset-objects-screen-obj"
-      :src="require('../assets/room/objects/screen.obj')"
-    ></a-assets-item>
+    
     <a-assets-item
       id="asset-objects-ybot"
       :src="require('../assets/room/objects/ybot.gltf')"
@@ -44,19 +37,7 @@
     ></a-assets-item>
   </a-assets>
 
-  <a-entity
-    id="screenshare-board"
-    ref="screenshareBoard"
-    hoverable
-    grabbable
-    draggable
-    droppable
-    body="type: static; shape: box"
-    obj-model="obj: #asset-objects-screen-obj; mtl: #asset-objects-screen-mtl;"
-    position="6 2 -4"
-    rotation="0 180 0"
-    scale="2 2 2"
-  ></a-entity>
+ 
 
   <a-entity
     id="ybot"
@@ -87,6 +68,7 @@
     ref="playerRig"
     movement-controls="constrainToNavMesh: true"
     position="0 0 0"
+    rotation= "0 -120 0"
   >
     <!--super-hands="colliderEvent: raycaster-intersection; colliderEventProperty: els; colliderEndEvent: raycaster-intersection-cleared; colliderEndEventProperty: clearedEls;"-->
     <a-entity

@@ -3,22 +3,30 @@
   <a-assets>
     <a-assets-item
       id="room-obj"
-      :src="require('../assets/room/FuturisticEnv.gltf')"
+      :src="require('../assets/room/SpaceDomesFinished.gltf')"
     ></a-assets-item>
 
   </a-assets>
 
   <!-- Skybox -->
-  <a-entity cubemap="folder: /GenericSkybox/"></a-entity>
-
-  <!--Objects-->
   <a-entity
     body="type: static; shape: box"
+    cubemap="folder: /SpaceSkyBox/" 
+  ></a-entity>
+
+  <!--Objects-->
+ 
+ <a-entity
+    body="type: static; shape: box"
     gltf-model="#room-obj"
-    cube-env-map="path: /LythwoodSkybox/; extension: jpg; reflectivity: 0.4;"
-    position="0 0 5"
+    position="25 -1.8 51"
     scale="1 1 1"
   ></a-entity>
+  
+   <!--
+         cube-env-map="path: /LythwoodSkybox/; extension: jpg; reflectivity: 0.4;"
+
+-->
 
   <!--lights-->
   <a-light
