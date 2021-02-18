@@ -625,6 +625,17 @@ function registerComponentSafe(name: string, component: AFrame.ComponentDefiniti
 
       playerCamera.object3D.matrixWorld.decompose(playerCameraPosition, playerCameraQuaternion, playerCameraScale);
 
+      // Set the rig to turn to face the same way as the camera laterally
+      // Get forward vector
+      const forwardVec: THREE.Vector3 = new THREE.Vector3(0, 0, 1);
+      forwardVec.applyQuaternion(playerCameraQuaternion);
+      // Scale to lateral
+      forwardVec.y = 0;
+      forwardVec.normalize();
+
+      playerRigQuaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), forwardVec);
+      playerCameraQuaternion.premultiply(playerRigQuaternion.clone().invert());
+
       this.fireRoomEvent("player/transform", {
         position: playerCameraPosition,
         rotation: playerRigQuaternion,

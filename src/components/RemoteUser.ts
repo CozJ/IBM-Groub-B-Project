@@ -63,6 +63,7 @@ export default class RemoteUser {
     
     // Main append
     this.element.setAttribute("gltf-model", "#asset-remote-user");
+    this.element.setAttribute("cube-env-map", "path: /LythwoodSkybox/; extension: jpg; reflectivity: 0.4;");
     this.element.toggleAttribute("animation-mixer");
     parentElement.appendChild(this.element);
   }
