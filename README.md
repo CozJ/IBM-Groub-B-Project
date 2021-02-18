@@ -4,11 +4,15 @@
 ```
 open project in visual studio code
 ```
+```
 open terminal
+```
 ```
 run npm install
 ```
+```
 run npm run serve
+```
 ```
 open localhost at port 
 ```
