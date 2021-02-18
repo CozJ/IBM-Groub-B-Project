@@ -96,7 +96,7 @@
         scale="0.05 0.05 0.05"
         rotation="-20 0 0"
       >
-        <a-text position="-5 -10 0.6" width="10" ref="vrChatBackLog" value=""></a-text>
+        <a-text position="-5 -8 0.6" width="10" ref="vrChatBackLog" value=""></a-text>
         <a-plane
           id="vrMenu"
           share-screen
