@@ -56,6 +56,7 @@ export default class RemoteUser {
     
     // Main append
     this.element.setAttribute("gltf-model", "#asset-remote-user");
+    this.element.toggleAttribute("animation-mixer");
     parentElement.appendChild(this.element);
   }
 

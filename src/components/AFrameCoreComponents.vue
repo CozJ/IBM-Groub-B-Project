@@ -69,7 +69,6 @@
     ref="playerRig"
     movement-controls="constrainToNavMesh: true"
     position="0 0 0"
-    rotation= "0 -120 0"
   >
     <a-entity
       ref="playerCamera"
