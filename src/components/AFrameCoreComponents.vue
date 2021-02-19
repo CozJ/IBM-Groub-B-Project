@@ -4,7 +4,7 @@
 
   <a-assets>
     <!-- UI -->
-    <img id="vrShareScreen" width="256" height="256" :src="require('../assets/ui/tv-24px.svg')">
+    <img id="vrRespawnButton" width="256" height="256" :src="require('../assets/ui/refresh-24px.svg')">
 
     <!-- Screenshare -->
     <canvas ref="uiCanvas" id="ui-canvas" width="1600" height="900"></canvas>
@@ -92,10 +92,10 @@
         <a-text position="-5 -8 0.6" width="10" ref="vrChatBackLog" value=""></a-text>
         <a-plane
           id="vrMenu"
-          share-screen
+          respawn-vr
           data-raycastable
           transparent="true"
-          src="#vrShareScreen"
+          src="#vrRespawnButton"
           :position="`${0 - (emotes.length / 2)} 0 0`"
         />
         <a-plane
@@ -828,15 +828,15 @@ const textMessage = new Audio(require('../assets/sounds/textMessage.mp3'));
       }
     })
 
-    const shareVideo = this.shareVideo;
+    const respawnVR = this.respawnButton;
 
-    registerComponentSafe("share-screen",{
+    registerComponentSafe("respawn-vr",{
       init: function(){
 
         const Element: AFrame.Entity = this.el;
         const sceneEl = Element.sceneEl as HTMLElement;
 
-        Element.addEventListener("click", function(evt) { shareVideo() });
+        Element.addEventListener("click", function(evt) { respawnVR() });
       }
     })
   
