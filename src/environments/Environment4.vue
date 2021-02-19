@@ -15,7 +15,7 @@
   <!-- Skybox -->
   <a-entity
     body="type: static; shape: box"
-    cubemap="folder: /SpaceSkyBox/" 
+    cubemap="folder: /PurpleSkybox/" 
   ></a-entity>
 
   <!--Objects-->
