@@ -7,7 +7,7 @@
     <img id="vrShareScreen" width="256" height="256" :src="require('../assets/ui/tv-24px.svg')">
 
     <!-- Screenshare -->
-    <canvas ref="uiCanvas" id="ui-canvas" width="1280" height="720"></canvas>
+    <canvas ref="uiCanvas" id="ui-canvas" width="1600" height="900"></canvas>
 
     <a-assets-item
       :id="'emote-image-' + name"
@@ -435,7 +435,7 @@ const textMessage = new Audio(require('../assets/sounds/textMessage.mp3'));
       ) as CanvasRenderingContext2D;
 
       function drawFrame() {
-        ctx.drawImage(video, 0, 0, 1280, 720);
+        ctx.drawImage(video, 0, 0, 1600, 900);
         requestAnimationFrame(drawFrame);
       }
 
@@ -764,7 +764,8 @@ const textMessage = new Audio(require('../assets/sounds/textMessage.mp3'));
           this.data.interval = setInterval(() => {
             for (const material of materialNeedsUpdate) {
               material.needsUpdate = true;
-              material.map = material.emissiveMap = new THREE.CanvasTexture(canvas);
+              material.color = new THREE.Color(0x000000);
+              material.emissiveMap = new THREE.CanvasTexture(canvas);
               material.emissiveIntensity = 1;
               material.emissive = new THREE.Color(0xFFFFFF);
             }
