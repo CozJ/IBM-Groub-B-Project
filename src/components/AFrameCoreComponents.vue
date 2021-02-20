@@ -442,7 +442,8 @@ const textMessage = new Audio(require('../assets/sounds/textMessage.mp3'));
       drawFrame();
     },
     helpButton: function() {
-      alert("Help");
+      window.open( 
+              "https://youtu.be/oAArtTKU2NI","_blank");
     },
     respawnButton: function() {
       const playerRig: AFrame.Entity = this.$refs.playerRig;
