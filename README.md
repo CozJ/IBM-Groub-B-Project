@@ -13,13 +13,13 @@ After installing Visual Studio Code, open the project in from it and open the te
 
 After this, proceed to run the following lines in your terminal within Visual Studio Code. 
 The first one will install npm and along with it all the packages which you will need to run the project. 
-``
+````
 run npm install
-``
+````
 The next line will package the application and run it on your local machine. 
-``
+````
 run npm run serve
-``
+````
 Once the application has been packaged, you will find at the bottom of the terminal the link you require to access it from any web browser. 
 
 ## NPM Commands
