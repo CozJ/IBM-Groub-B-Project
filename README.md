@@ -1,4 +1,8 @@
-# ibm-vr-group-b
+# Online Virtual Environment Project
+
+## Description
+
+This project is a virtual environment which was built to allow for virtual meetings to take place in a 3D environment and be accessible straight from any browser. It was built using A-Frame, which is a framework used to create and structure 3D environments. Along with this, Vue was used in order to help structure the project better and optimise it as much as possible for web deployment. Finally, Deepstream was used in order to provide the various connections required within the netowrk including hosting the users and allowing for screensharing.
 
 ## Project setup and run
 Node.js is required for this project to allow for installation of the required packages straight from the terminal. You can find it and install it from here:
